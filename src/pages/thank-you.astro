@@ -1,0 +1,38 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Inquiry Received">
+  <main class="min-h-screen flex items-center justify-center px-4 sm:px-6">
+    <div class="flex flex-col items-center text-center max-w-md">
+      <div class="flex flex-col items-center gap-0.5 mb-8">
+        <span class="block w-12 h-px bg-crest-gold/60"></span>
+        <span class="block w-8 h-px bg-crest-gold/30"></span>
+        <span class="block w-4 h-px bg-crest-gold/20"></span>
+      </div>
+
+      <h1 data-i18n="thankyou.heading" class="text-2xl sm:text-3xl md:text-4xl font-display font-black text-steel-50 mb-4">
+        询盘已收到
+      </h1>
+      <p class="text-steel-400 text-sm md:text-base leading-relaxed mb-8">
+        <span data-i18n="thankyou.message">感谢您的联系！我们的团队将审核您的需求，并在</span>
+        {' '}<strong data-i18n="thankyou.hours" class="text-crest-gold">24小时内</strong>回复。
+      </p>
+
+      <a href="/" id="back-home"
+        class="px-6 py-3 bg-crest-gold text-crest-dark font-semibold text-sm tracking-wider uppercase
+               hover:bg-crest-gold/90 transition-colors">
+        <span data-i18n="thankyou.back">返回首页</span>
+      </a>
+    </div>
+  </main>
+
+  <script>
+    // Preserve language when going back to home
+    var p = new URLSearchParams(window.location.search);
+    var lang = p.get('lang');
+    if (lang) {
+      document.getElementById('back-home').href = '/?lang=' + lang;
+    }
+  </script>
+</Layout>

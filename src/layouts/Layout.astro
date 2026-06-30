@@ -1,0 +1,67 @@
+---
+import { siteConfig } from '../data/products';
+
+const { title = siteConfig.tagline, description = "High-quality piston & piston ring supplier for SEA, Middle East & Africa markets." } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="dark" />
+
+    <title>{title} — {siteConfig.brandName}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
+
+    <meta property="og:title" content={`${siteConfig.brandName} — ${title}`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+
+    <style is:global>
+      :root {
+        --crest-gold: #C8A96E;
+        --crest-silver: #B8BCC0;
+        --crest-dark: #1A1C20;
+        --crest-accent: #D4442A;
+      }
+      ::selection {
+        background: var(--crest-gold);
+        color: var(--crest-dark);
+      }
+      html { scroll-behavior: smooth; }
+    </style>
+  </head>
+  <body class="bg-crest-dark text-steel-100 font-sans antialiased">
+    <slot />
+
+    <script>
+      import { translations } from '../i18n/translations.js';
+
+      (function() {
+        const SUPPORTED = ['zh', 'en', 'ar', 'vi', 'th'];
+        const RTL = ['ar'];
+        const p = new URLSearchParams(window.location.search);
+        const lang = SUPPORTED.includes(p.get('lang')) ? p.get('lang') : 'zh';
+        const t = translations[lang] || translations.zh;
+
+        document.documentElement.dir = RTL.includes(lang) ? 'rtl' : 'ltr';
+        document.documentElement.lang = lang;
+
+        document.querySelectorAll('[data-i18n]').forEach(function(el) {
+          var key = el.getAttribute('data-i18n');
+          if (key && t[key]) el.textContent = t[key];
+        });
+
+        document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+          var key = el.getAttribute('data-i18n-ph');
+          if (key && t[key]) el.setAttribute('placeholder', t[key]);
+        });
+      })();
+    </script>
+  </body>
+</html>

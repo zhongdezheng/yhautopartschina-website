@@ -1,0 +1,153 @@
+---
+// ThreeViewer.astro – lightweight Three.js 3D container for piston/engine models
+---
+
+<div
+  id="canvas-container"
+  class="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2/1] bg-steel-950 border border-steel-800/30 rounded-none overflow-hidden"
+>
+  <div id="three-loading" class="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10">
+    <div class="flex flex-col items-center gap-1">
+      <span class="block w-8 h-px bg-crest-gold/60 animate-pulse"></span>
+      <span class="block w-6 h-px bg-crest-gold/30"></span>
+    </div>
+    <p class="text-steel-500 text-xs tracking-[0.2em] uppercase">Loading 3D Model</p>
+  </div>
+
+  <div id="three-controls" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-10">
+    <button id="btn-rotate" class="text-[10px] sm:text-xs tracking-wider uppercase bg-crest-dark/90 text-steel-300 border border-steel-700 px-2 sm:px-3 py-1.5 hover:border-crest-gold/50 hover:text-crest-gold transition-colors">Rotate</button>
+    <button id="btn-explode" class="text-[10px] sm:text-xs tracking-wider uppercase bg-crest-dark/90 text-steel-300 border border-steel-700 px-2 sm:px-3 py-1.5 hover:border-crest-gold/50 hover:text-crest-gold transition-colors">Explode</button>
+    <button id="btn-reset" class="text-[10px] sm:text-xs tracking-wider uppercase bg-crest-dark/90 text-steel-300 border border-steel-700 px-2 sm:px-3 py-1.5 hover:border-crest-gold/50 hover:text-crest-gold transition-colors">Reset</button>
+  </div>
+</div>
+
+<script>
+  import * as THREE from 'three';
+
+  const container = document.getElementById('canvas-container');
+  const loading = document.getElementById('three-loading');
+  const btnRotate = document.getElementById('btn-rotate');
+  const btnExplode = document.getElementById('btn-explode');
+  const btnReset = document.getElementById('btn-reset');
+
+  // ---- Scene Setup ----
+  const scene = new THREE.Scene();
+
+  const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+  camera.position.set(4, 2, 6);
+  camera.lookAt(0, 0, 0);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
+  container.appendChild(renderer.domElement);
+  renderer.domElement.style.display = 'block';
+  renderer.domElement.style.width = '100%';
+  renderer.domElement.style.height = '100%';
+
+  // ---- Lighting ----
+  scene.add(new THREE.AmbientLight(0x444444, 2));
+  const key = new THREE.DirectionalLight(0xffffff, 3);
+  key.position.set(5, 8, 5);
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0xC8A96E, 1.5);
+  rim.position.set(-3, 1, -3);
+  scene.add(rim);
+
+  // ---- Ground Grid ----
+  const grid = new THREE.GridHelper(8, 20, 0x333333, 0x1a1a1a);
+  scene.add(grid);
+
+  // ---- Placeholder Piston Model ----
+  const pistonGroup = new THREE.Group();
+
+  const bodyGeo = new THREE.CylinderGeometry(0.4, 0.35, 1.2, 32);
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0xb8bcc0, roughness: 0.3, metalness: 0.9 });
+  const body = new THREE.Mesh(bodyGeo, bodyMat);
+  body.position.y = 0.6;
+  pistonGroup.add(body);
+
+  const headGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.15, 32);
+  const headMat = new THREE.MeshStandardMaterial({ color: 0xc8a96e, roughness: 0.4, metalness: 0.7 });
+  const head = new THREE.Mesh(headGeo, headMat);
+  head.position.y = 1.25;
+  pistonGroup.add(head);
+
+  const rings = [];
+  for (let i = 0; i < 3; i++) {
+    const ringGeo = new THREE.TorusGeometry(0.37, 0.03, 16, 32);
+    const ringMat = new THREE.MeshStandardMaterial({ color: 0x666666, roughness: 0.2, metalness: 0.95 });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = 0.9 - i * 0.12;
+    rings.push(ring);
+    pistonGroup.add(ring);
+  }
+
+  const pinGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.9, 16);
+  const pinMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.2, metalness: 0.9 });
+  const pin = new THREE.Mesh(pinGeo, pinMat);
+  pin.rotation.z = Math.PI / 2;
+  pin.position.y = 0.3;
+  pistonGroup.add(pin);
+
+  scene.add(pistonGroup);
+
+  // ---- State ----
+  let isExploded = false;
+  let isRotating = true;
+
+  // ---- Animation Loop ----
+  function animate() {
+    requestAnimationFrame(animate);
+    if (isRotating) pistonGroup.rotation.y += 0.005;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // ---- Controls ----
+  btnRotate.addEventListener('click', () => {
+    isRotating = !isRotating;
+    btnRotate.classList.toggle('text-crest-gold', isRotating);
+    btnRotate.classList.toggle('border-crest-gold/50', isRotating);
+  });
+
+  btnExplode.addEventListener('click', () => {
+    isExploded = !isExploded;
+    btnExplode.classList.toggle('text-crest-gold', isExploded);
+    btnExplode.classList.toggle('border-crest-gold/50', isExploded);
+
+    rings.forEach((ring, i) => {
+      ring.position.y = isExploded ? 0.9 - i * 0.12 + (i + 1) * 0.3 : 0.9 - i * 0.12;
+      ring.material.color.set(isExploded ? 0xc8a96e : 0x666666);
+    });
+    head.position.y = isExploded ? 2.0 : 1.25;
+    pin.position.x = isExploded ? 0.5 : 0;
+  });
+
+  btnReset.addEventListener('click', () => {
+    pistonGroup.rotation.set(0, 0, 0);
+    if (isExploded) {
+      isExploded = false;
+      btnExplode.classList.remove('text-crest-gold', 'border-crest-gold/50');
+      rings.forEach((ring, i) => {
+        ring.position.y = 0.9 - i * 0.12;
+        ring.material.color.set(0x666666);
+      });
+      head.position.y = 1.25;
+      pin.position.x = 0;
+    }
+  });
+
+  // Loading complete
+  if (loading) loading.style.display = 'none';
+
+  // Resize handler
+  window.addEventListener('resize', () => {
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  });
+</script>

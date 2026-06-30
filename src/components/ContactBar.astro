@@ -1,0 +1,57 @@
+---
+import { siteConfig } from '../data/products';
+---
+
+<aside class="
+  fixed right-0 z-40 flex flex-col gap-2
+  bottom-4 right-3 sm:bottom-6 sm:right-4 md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:right-5
+">
+  <a
+    href={`https://wa.me/${siteConfig.whatsapp}?text=I%20am%20interested%20in%20your%20Piston/Piston%20Rings`}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="group flex items-center md:flex-col gap-2 md:gap-1 px-3 py-2 sm:py-2.5 md:py-4 md:px-3
+           bg-[#25D366]/90 backdrop-blur-sm hover:bg-[#25D366] text-white
+           text-xs sm:text-sm md:text-xs font-medium tracking-wide transition-all duration-300
+           border-l-2 md:border-l-0 md:border-t-2 border-[#25D366]/40"
+    aria-label="Chat on WhatsApp"
+  >
+    <span class="text-base sm:text-lg md:text-xl">💬</span>
+    <span data-i18n="contact.whatsapp" class="md:writing-vertical-rl md:text-[10px] md:tracking-[0.2em] uppercase">WhatsApp</span>
+  </a>
+
+  <a
+    href={`https://tiktok.com/@${siteConfig.tiktok}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="group flex items-center md:flex-col gap-2 md:gap-1 px-3 py-2 sm:py-2.5 md:py-3 md:px-3
+           bg-steel-800/90 backdrop-blur-sm hover:bg-steel-700 text-steel-200
+           text-xs sm:text-sm font-medium tracking-wide transition-all duration-300"
+    aria-label="TikTok"
+  >
+    <span class="text-base sm:text-lg md:text-base">🎵</span>
+    <span class="md:hidden">TikTok</span>
+  </a>
+
+  <a
+    href={`https://facebook.com/${siteConfig.facebook}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="group flex items-center md:flex-col gap-2 md:gap-1 px-3 py-2 sm:py-2.5 md:py-3 md:px-3
+           bg-steel-800/90 backdrop-blur-sm hover:bg-steel-700 text-steel-200
+           text-xs sm:text-sm font-medium tracking-wide transition-all duration-300"
+    aria-label="Facebook"
+  >
+    <span class="text-base sm:text-lg md:text-base">📘</span>
+    <span class="md:hidden">Facebook</span>
+  </a>
+</aside>
+
+<style is:global>
+  @media (min-width: 768px) {
+    .md\\:writing-vertical-rl {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+    }
+  }
+</style>

@@ -1,0 +1,49 @@
+---
+const { product, index } = Astro.props;
+---
+
+<article class="group border border-steel-800/60 hover:border-crest-gold/30 bg-steel-950/50 transition-all duration-500">
+  <div class="relative aspect-[4/3] bg-steel-900 overflow-hidden">
+    <img
+      src={product.image}
+      alt={product.title}
+      loading="lazy"
+      decoding="async"
+      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+    />
+    <div class="absolute top-3 left-3">
+      <span class="text-[10px] tracking-[0.2em] uppercase bg-crest-dark/80 text-crest-gold px-2 py-1 border-l border-crest-gold/50">
+        {product.category}
+      </span>
+    </div>
+    <span class="absolute top-3 right-3 text-steel-500 text-xs font-mono">
+      {(index + 1).toString().padStart(2, '0')}
+    </span>
+  </div>
+
+  <div class="p-4 sm:p-5 space-y-3 sm:space-y-4">
+    <h3 class="text-base sm:text-lg font-semibold text-steel-100 leading-snug">{product.title}</h3>
+
+    <div class="space-y-1.5">
+      <p data-i18n="products.compatible" class="text-steel-500 text-[10px] sm:text-xs tracking-wider uppercase">适配车型</p>
+      <p class="text-steel-300 text-xs sm:text-sm leading-relaxed">{product.compatible}</p>
+    </div>
+
+    <ul class="space-y-1.5 sm:space-y-2 pt-2 border-t border-steel-800/30">
+      {product.features.map((f) => (
+        <li class="flex items-center gap-2 text-xs sm:text-sm text-steel-400">
+          <span class="text-crest-gold text-xs leading-none">▸</span>
+          {f}
+        </li>
+      ))}
+    </ul>
+
+    <div class="flex flex-wrap gap-2 pt-2">
+      {product.marketFocus.map((m) => (
+        <span class="text-[10px] tracking-wider uppercase bg-steel-800/50 text-steel-400 px-2 py-0.5">
+          {m}
+        </span>
+      ))}
+    </div>
+  </div>
+</article>

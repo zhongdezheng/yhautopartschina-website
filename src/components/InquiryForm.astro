@@ -1,0 +1,73 @@
+---
+import { siteConfig } from '../data/products';
+---
+
+<section id="inquiry" class="py-20 sm:py-24 px-4 sm:px-6 bg-steel-950/50 border-y border-steel-800/20">
+  <div class="mx-auto max-w-2xl">
+    <div class="flex flex-col items-center mb-10 sm:mb-12 text-center">
+      <span data-i18n="inquiry.section" class="text-crest-gold text-[10px] sm:text-xs tracking-[0.3em] uppercase mb-2">联系我们</span>
+      <h2 data-i18n="inquiry.heading" class="text-2xl sm:text-3xl md:text-4xl font-display font-black text-steel-50">发送询盘</h2>
+      <div class="flex flex-col items-center gap-0.5 mt-3">
+        <span class="block w-10 h-px bg-crest-gold/50"></span>
+        <span class="block w-6 h-px bg-crest-gold/20"></span>
+      </div>
+    </div>
+
+    <form action="/thank-you" method="POST" class="space-y-5 sm:space-y-6">
+      <div>
+        <label data-i18n="inquiry.name" for="name" class="block text-[10px] sm:text-xs tracking-wider uppercase text-steel-400 mb-2">姓名 / 公司名 *</label>
+        <input type="text" id="name" name="name" required
+          class="w-full bg-steel-900 border border-steel-700 text-steel-100 px-3 sm:px-4 py-2.5 sm:py-3 text-sm
+                 focus:border-crest-gold/50 focus:outline-none transition-colors placeholder-steel-600"
+          data-i18n-ph="inquiry.namePlaceholder" placeholder="您的姓名或公司名称" />
+      </div>
+
+      <div>
+        <label data-i18n="inquiry.email" for="email" class="block text-[10px] sm:text-xs tracking-wider uppercase text-steel-400 mb-2">邮箱 *</label>
+        <input type="email" id="email" name="email" required
+          class="w-full bg-steel-900 border border-steel-700 text-steel-100 px-3 sm:px-4 py-2.5 sm:py-3 text-sm
+                 focus:border-crest-gold/50 focus:outline-none transition-colors placeholder-steel-600"
+          data-i18n-ph="inquiry.emailPlaceholder" placeholder="your@email.com" />
+      </div>
+
+      <div>
+        <label data-i18n="inquiry.vehicle" for="vehicle" class="block text-[10px] sm:text-xs tracking-wider uppercase text-steel-400 mb-2">目标车型 / 发动机型号</label>
+        <input type="text" id="vehicle" name="vehicle"
+          class="w-full bg-steel-900 border border-steel-700 text-steel-100 px-3 sm:px-4 py-2.5 sm:py-3 text-sm
+                 focus:border-crest-gold/50 focus:outline-none transition-colors placeholder-steel-600"
+          data-i18n-ph="inquiry.vehiclePlaceholder" placeholder="例如：奥迪 Q7 3.0T, 宝马 525i N52" />
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label data-i18n="inquiry.quantity" for="quantity" class="block text-[10px] sm:text-xs tracking-wider uppercase text-steel-400 mb-2">采购数量</label>
+          <input type="text" id="quantity" name="quantity"
+            class="w-full bg-steel-900 border border-steel-700 text-steel-100 px-3 sm:px-4 py-2.5 sm:py-3 text-sm
+                   focus:border-crest-gold/50 focus:outline-none transition-colors placeholder-steel-600"
+            data-i18n-ph="inquiry.quantityPlaceholder" placeholder="例如：100 套" />
+        </div>
+        <div>
+          <label data-i18n="inquiry.market" for="market" class="block text-[10px] sm:text-xs tracking-wider uppercase text-steel-400 mb-2">目标市场</label>
+          <select id="market" name="market"
+            class="w-full bg-steel-900 border border-steel-700 text-steel-100 px-3 sm:px-4 py-2.5 sm:py-3 text-sm
+                   focus:border-crest-gold/50 focus:outline-none transition-colors">
+            <option value="" class="bg-steel-900" data-i18n="inquiry.marketPlaceholder">选择地区</option>
+            {siteConfig.targetMarkets.map((m) => (
+              <option value={m.value} class="bg-steel-900">{m.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <button data-i18n="inquiry.submit" type="submit"
+        class="w-full py-3 sm:py-3.5 bg-crest-gold text-crest-dark font-semibold text-sm tracking-wider uppercase
+               hover:bg-crest-gold/90 active:scale-[0.99] transition-all">
+        发送询盘 →
+      </button>
+
+      <p data-i18n="inquiry.footnote" class="text-steel-600 text-[10px] sm:text-xs text-center pt-2">
+        24小时内回复。无垃圾邮件，无中间商。
+      </p>
+    </form>
+  </div>
+</section>
