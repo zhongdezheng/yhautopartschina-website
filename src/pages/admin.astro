@@ -1,17 +1,17 @@
 ---
-// Admin page at /admin — Product Management Dashboard
+// 管理后台 /admin — 产品管理
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="zh">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
-  <title>Admin — YH Auto Parts</title>
+  <title>管理后台 — YH 汽配</title>
   <style is:inline>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', system-ui, sans-serif; background: #0a0a10; color: #d0d0d8; min-height: 100vh; }
+    body { font-family: 'PingFang SC', 'Microsoft YaHei', 'Inter', system-ui, sans-serif; background: #0a0a10; color: #d0d0d8; min-height: 100vh; }
     .container { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
     h1 { font-size: 1.4rem; font-weight: 700; color: #c8a96e; margin-bottom: 4px; }
     h2 { font-size: 1rem; font-weight: 600; margin: 20px 0 10px; color: #e0e0e8; }
@@ -21,48 +21,48 @@
     .login-box input { width: 100%; margin-top: 12px; padding: 10px 14px; background: #1a1a24; border: 1px solid #333; color: #d0d0d8; font-size: 0.9rem; outline: none; }
     .login-box input:focus { border-color: #c8a96e; }
 
-    .btn { padding: 8px 18px; font-size: 0.75rem; border: 1px solid #333; background: #1a1a24; color: #d0d0d8; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.05em; }
+    .btn { padding: 8px 18px; font-size: 0.8rem; border: 1px solid #333; background: #1a1a24; color: #d0d0d8; cursor: pointer; transition: all 0.2s; letter-spacing: 0.03em; }
     .btn:hover { border-color: #c8a96e; color: #c8a96e; }
     .btn-primary { background: #c8a96e; color: #0a0a10; border-color: #c8a96e; font-weight: 600; }
     .btn-primary:hover { background: #b8985e; }
     .btn-danger { border-color: #6a2a2a; color: #d47272; }
     .btn-danger:hover { background: #2a1010; border-color: #d44; }
-    .btn-sm { padding: 5px 12px; font-size: 0.65rem; }
-    .btn-xs { padding: 3px 8px; font-size: 0.6rem; }
+    .btn-sm { padding: 5px 12px; font-size: 0.7rem; }
+    .btn-xs { padding: 3px 8px; font-size: 0.65rem; }
 
-    table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
     th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #1a1a28; }
-    th { color: #888; font-weight: 500; text-transform: uppercase; font-size: 0.6rem; letter-spacing: 0.1em; }
+    th { color: #888; font-weight: 500; font-size: 0.7rem; letter-spacing: 0.05em; }
     tr:hover td { background: rgba(200,169,110,0.03); }
     .img-td { width: 52px; }
     .img-td img, .img-td .no-img { width: 44px; height: 44px; object-fit: cover; background: #111; border: 1px solid #222; display: flex; align-items: center; justify-content: center; color: #333; font-size: 9px; }
-    .tag { display: inline-block; padding: 2px 7px; font-size: 0.6rem; border: 1px solid #333; color: #888; margin: 1px 2px; }
+    .tag { display: inline-block; padding: 2px 7px; font-size: 0.65rem; border: 1px solid #333; color: #888; margin: 1px 2px; }
     .tag.gold { border-color: #c8a96e40; color: #c8a96e; }
     .title-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     .toolbar { display: flex; gap: 8px; align-items: center; margin: 16px 0; flex-wrap: wrap; }
-    .toolbar input { padding: 7px 12px; background: #1a1a24; border: 1px solid #333; color: #d0d0d8; font-size: 0.78rem; outline: none; min-width: 200px; }
+    .toolbar input { padding: 7px 12px; background: #1a1a24; border: 1px solid #333; color: #d0d0d8; font-size: 0.82rem; outline: none; min-width: 200px; }
     .toolbar input:focus { border-color: #c8a96e; }
-    .badge { display: inline-block; padding: 1px 8px; background: #c8a96e20; color: #c8a96e; font-size: 0.65rem; border-radius: 2px; }
+    .badge { display: inline-block; padding: 1px 8px; background: #c8a96e20; color: #c8a96e; font-size: 0.7rem; }
 
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
     .modal { background: #111118; border: 1px solid #2a2a38; width: 90%; max-width: 620px; max-height: 85vh; overflow-y: auto; }
     .modal-header { padding: 18px 24px; border-bottom: 1px solid #1a1a28; display: flex; justify-content: space-between; align-items: center; }
-    .modal-header h3 { font-size: 0.95rem; color: #c8a96e; }
+    .modal-header h3 { font-size: 1rem; color: #c8a96e; }
     .modal-body { padding: 20px 24px; }
     .field { margin-bottom: 14px; }
-    .field label { display: block; font-size: 0.65rem; color: #888; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.08em; }
-    .field input, .field textarea { width: 100%; padding: 9px 12px; background: #1a1a24; border: 1px solid #333; color: #d0d0d8; font-size: 0.82rem; outline: none; }
+    .field label { display: block; font-size: 0.7rem; color: #888; margin-bottom: 5px; letter-spacing: 0.05em; }
+    .field input, .field textarea { width: 100%; padding: 9px 12px; background: #1a1a24; border: 1px solid #333; color: #d0d0d8; font-size: 0.85rem; outline: none; }
     .field input:focus, .field textarea:focus { border-color: #c8a96e; }
     .field textarea { min-height: 55px; resize: vertical; }
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .img-preview { width: 100%; max-height: 200px; object-fit: cover; background: #0a0a10; border: 1px solid #222; margin-top: 8px; display: none; }
-    .img-upload-area { border: 1px dashed #333; padding: 16px; text-align: center; color: #666; font-size: 0.7rem; cursor: pointer; transition: border-color 0.2s; }
+    .img-upload-area { border: 1px dashed #333; padding: 16px; text-align: center; color: #666; font-size: 0.75rem; cursor: pointer; transition: border-color 0.2s; }
     .img-upload-area:hover { border-color: #c8a96e; color: #888; }
     .img-upload-area input { display: none; }
 
-    .toast { position: fixed; top: 20px; right: 20px; z-index: 200; padding: 12px 20px; font-size: 0.75rem; border: 1px solid; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+    .toast { position: fixed; top: 20px; right: 20px; z-index: 200; padding: 12px 20px; font-size: 0.8rem; border: 1px solid; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
     .toast.show { opacity: 1; }
     .toast.success { background: #0a1a0a; border-color: #2a6a2a; color: #6ad46a; }
     .toast.error { background: #1a0a0a; border-color: #6a2a2a; color: #d46a6a; }
@@ -71,93 +71,92 @@
 <body>
 
 <div id="login-screen" class="login-box">
-  <h1 style="font-size:1.2rem">YH Admin</h1>
-  <p class="muted" style="margin-bottom:20px">Product Management System</p>
-  <input type="password" id="login-token" placeholder="Admin Token" onkeydown="if(event.key==='Enter')login()" />
-  <button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="login()">Login</button>
+  <h1 style="font-size:1.3rem">YH 汽配管理</h1>
+  <p class="muted" style="margin-bottom:20px">产品管理系统</p>
+  <input type="password" id="login-token" placeholder="请输入管理令牌" onkeydown="if(event.key==='Enter')login()" />
+  <button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="login()">登 录</button>
 </div>
 
 <div id="main-screen" style="display:none">
   <div class="container">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
       <div>
-        <h1>YH Admin</h1>
-        <p class="muted">Product Management · <a href="/" style="color:#c8a96e;text-decoration:none">Visit Site →</a> · <a href="/admin" style="color:#888;text-decoration:none;font-size:0.7rem">Reload</a></p>
+        <h1>YH 汽配管理</h1>
+        <p class="muted">产品管理 · <a href="/" style="color:#c8a96e;text-decoration:none">查看网站 →</a></p>
       </div>
       <div style="display:flex;gap:8px">
-        <button class="btn btn-primary" onclick="openModal()">+ New Product</button>
-        <button class="btn btn-sm" onclick="logout()" style="border-color:#444">Logout</button>
+        <button class="btn btn-primary" onclick="openModal()">＋ 添加产品</button>
+        <button class="btn btn-sm" onclick="logout()" style="border-color:#444">退出登录</button>
       </div>
     </div>
 
     <div class="toolbar">
-      <input type="text" id="search-box" placeholder="Search by title, category, compatible..." oninput="renderTable()" />
-      <span class="badge" id="product-count">0</span>
-      <span style="font-size:0.65rem;color:#555;margin-left:4px">products</span>
+      <input type="text" id="search-box" placeholder="搜索产品名称 / 品类 / 适配车型..." oninput="renderTable()" />
+      <span class="badge">共 <strong id="product-count">0</strong> 件</span>
     </div>
 
     <div style="overflow-x:auto">
       <table>
         <thead><tr>
           <th style="width:30px"><input type="checkbox" id="select-all" onchange="toggleSelectAll()" /></th>
-          <th></th><th>Title</th><th>Category</th><th>Compatible</th><th>Markets</th><th style="width:120px">Actions</th>
+          <th>图片</th><th>产品名称</th><th>品类</th><th>适配车型</th><th>目标市场</th><th style="width:80px">操作</th>
         </tr></thead>
-        <tbody id="product-list"><tr><td colspan="7" style="text-align:center;color:#555;padding:40px">Loading products...</td></tr></tbody>
+        <tbody id="product-list"><tr><td colspan="7" style="text-align:center;color:#555;padding:40px">正在加载产品...</td></tr></tbody>
       </table>
     </div>
 
-    <div id="bulk-bar" style="display:none;margin-top:8px;padding:8px 12px;background:#1a0a0a;border:1px solid #3a1a1a;display:none;align-items:center;gap:8px">
-      <span id="bulk-count" style="font-size:0.7rem;color:#d47272">0 selected</span>
-      <button class="btn btn-danger btn-xs" onclick="bulkDelete()">Delete Selected</button>
+    <div id="bulk-bar" style="display:none;margin-top:8px;padding:8px 12px;background:#1a0a0a;border:1px solid #3a1a1a;align-items:center;gap:8px">
+      <span id="bulk-count" style="font-size:0.75rem;color:#d47272">已选 0 件</span>
+      <button class="btn btn-danger btn-xs" onclick="bulkDelete()">批量删除</button>
     </div>
   </div>
 </div>
 
-<!-- Modal -->
+<!-- 弹窗 -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-header">
-      <h3 id="modal-title">New Product</h3>
+      <h3 id="modal-title">添加产品</h3>
       <button style="background:none;border:none;color:#888;cursor:pointer;font-size:1.2rem" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body">
       <form id="product-form" onsubmit="saveProduct(event)">
         <div class="field-row">
           <div class="field">
-            <label>Title *</label>
-            <input type="text" id="f-title" required placeholder="e.g. BMW B48 Piston Kit" />
+            <label>产品名称 *</label>
+            <input type="text" id="f-title" required placeholder="例如：宝马 B48 活塞总成" />
           </div>
           <div class="field">
-            <label>Category *</label>
-            <input type="text" id="f-category" required placeholder="e.g. Piston Kit" list="category-list" />
+            <label>品类 *</label>
+            <input type="text" id="f-category" required placeholder="例如：活塞总成" list="category-list" />
             <datalist id="category-list"></datalist>
           </div>
         </div>
         <div class="field">
-          <label>Compatible Vehicles *</label>
-          <textarea id="f-compatible" required placeholder="e.g. BMW 3-Series, 5-Series (2015-2022)"></textarea>
+          <label>适配车型 *</label>
+          <textarea id="f-compatible" required placeholder="例如：宝马3系 / 5系 / X3（2015-2022）"></textarea>
         </div>
         <div class="field">
-          <label>Features (one per line)</label>
-          <textarea id="f-features" placeholder="OEM quality&#10;1 year warranty&#10;Fast shipping"></textarea>
+          <label>产品特点（一行一个）</label>
+          <textarea id="f-features" placeholder="原厂品质&#10;一年质保&#10;快速发货"></textarea>
         </div>
         <div class="field">
-          <label>Image</label>
+          <label>产品图片</label>
           <div class="img-upload-area" onclick="document.getElementById('f-image-file').click()">
-            <span id="img-upload-text">📷 Click to upload image or paste URL below</span>
+            <span id="img-upload-text">📷 点击上传图片，或在下方面粘贴图片链接</span>
             <input type="file" id="f-image-file" accept="image/*" onchange="previewImage(event)" />
           </div>
-          <input type="text" id="f-image" placeholder="https://example.com/image.jpg" style="margin-top:6px" oninput="showUrlPreview()" />
+          <input type="text" id="f-image" placeholder="https://example.com/图片.jpg" style="margin-top:6px" oninput="showUrlPreview()" />
           <img id="img-preview" class="img-preview" />
         </div>
         <div class="field">
-          <label>Market Focus (comma separated)</label>
-          <input type="text" id="f-markets" placeholder="Southeast Asia, Middle East, Africa" />
+          <label>目标市场（逗号分隔）</label>
+          <input type="text" id="f-markets" placeholder="东南亚, 中东, 非洲" />
         </div>
         <div style="display:flex;gap:8px;margin-top:16px">
-          <button type="submit" class="btn btn-primary" id="btn-save">Save Product</button>
-          <button type="button" class="btn" onclick="closeModal()">Cancel</button>
-          <button type="button" class="btn btn-danger" id="btn-delete" style="display:none;margin-left:auto" onclick="deleteProduct()">Delete</button>
+          <button type="submit" class="btn btn-primary" id="btn-save">保存产品</button>
+          <button type="button" class="btn" onclick="closeModal()">取消</button>
+          <button type="button" class="btn btn-danger" id="btn-delete" style="display:none;margin-left:auto" onclick="deleteProduct()">删除产品</button>
         </div>
       </form>
     </div>
@@ -176,11 +175,10 @@
 
   function login() {
     token = document.getElementById('login-token').value.trim();
-    if (!token) return t('Please enter token', 'error');
+    if (!token) return t('请输入管理令牌', 'error');
     fetch('/api/products', { headers: { Authorization: 'Bearer ' + token } })
-      .then(r => r.ok ? (localStorage.setItem('yh_admin_token', token), showMain(), loadProducts()) : null)
-      .then(() => r ? null : t('Invalid token', 'error'))
-      .catch(() => t('Connection failed', 'error'));
+      .then(r => r.ok ? (localStorage.setItem('yh_admin_token', token), showMain(), loadProducts()) : t('令牌无效', 'error'))
+      .catch(() => t('连接失败', 'error'));
   }
 
   function logout() {
@@ -201,7 +199,7 @@
       if (!Array.isArray(products)) products = [];
       updateCategories();
       renderTable();
-    } catch { document.getElementById('product-list').innerHTML = '<tr><td colspan="7" style="text-align:center;color:#a44;padding:40px">Failed to load products</td></tr>'; }
+    } catch { document.getElementById('product-list').innerHTML = '<tr><td colspan="7" style="text-align:center;color:#a44;padding:40px">加载失败，请刷新重试</td></tr>'; }
   }
 
   function updateCategories() {
@@ -225,22 +223,22 @@
     document.getElementById('product-count').textContent = filtered.length;
     const tbody = document.getElementById('product-list');
     if (!products.length) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#555;padding:40px">No products yet. Click "+ New Product" to add one.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#555;padding:40px">暂无产品，点击「＋ 添加产品」开始</td></tr>';
       return;
     }
     if (!filtered.length) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#555;padding:40px">No products match search.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#555;padding:40px">没有匹配的产品</td></tr>';
       return;
     }
     tbody.innerHTML = filtered.map(p => `
       <tr>
         <td><input type="checkbox" class="row-check" data-id="${p.id}" onchange="updateBulkBar()" /></td>
-        <td class="img-td">${p.image ? `<img src="${p.image}" alt="" onerror="this.parentElement.innerHTML='<div class=no-img>ERR</div>'" />` : '<div class="no-img">N/A</div>'}</td>
+        <td class="img-td">${p.image ? `<img src="${p.image}" alt="" onerror="this.parentElement.innerHTML='<div class=no-img>加载失败</div>'" />` : '<div class="no-img">无图</div>'}</td>
         <td class="title-cell"><strong style="color:#e0e0e8">${e(p.title)}</strong></td>
         <td><span class="tag gold">${e(p.category)}</span></td>
-        <td style="font-size:0.72rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e(p.compatible)}</td>
+        <td style="font-size:0.75rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e(p.compatible)}</td>
         <td>${(p.market_focus||[]).map(m => `<span class="tag">${e(m)}</span>`).join(' ')}</td>
-        <td><button class="btn btn-sm" onclick="editProduct('${p.id}')">Edit</button></td>
+        <td><button class="btn btn-sm" onclick="editProduct('${p.id}')">编辑</button></td>
       </tr>
     `).join('');
     updateBulkBar();
@@ -257,7 +255,7 @@
     const bar = document.getElementById('bulk-bar');
     if (selected.length) {
       bar.style.display = 'flex';
-      document.getElementById('bulk-count').textContent = selected.length + ' selected';
+      document.getElementById('bulk-count').textContent = '已选 ' + selected.length + ' 件';
     } else {
       bar.style.display = 'none';
     }
@@ -265,7 +263,7 @@
 
   async function bulkDelete() {
     const ids = [...document.querySelectorAll('.row-check:checked')].map(cb => cb.dataset.id);
-    if (!ids.length || !confirm(`Permanently delete ${ids.length} product(s)?`)) return;
+    if (!ids.length || !confirm(`确认永久删除 ${ids.length} 件产品？`)) return;
     let deleted = 0;
     for (const id of ids) {
       try {
@@ -273,17 +271,17 @@
         deleted++;
       } catch {}
     }
-    t(`Deleted ${deleted} product(s)`, 'success');
+    t(`已删除 ${deleted} 件产品`, 'success');
     loadProducts();
   }
 
-  // --- Modal ---
+  // --- 弹窗 ---
   function openModal(id) {
     editingId = id || null;
-    document.getElementById('modal-title').textContent = id ? 'Edit Product' : 'New Product';
+    document.getElementById('modal-title').textContent = id ? '编辑产品' : '添加产品';
     document.getElementById('btn-delete').style.display = id ? 'inline-block' : 'none';
     document.getElementById('img-preview').style.display = 'none';
-    document.getElementById('img-upload-text').textContent = '📷 Click to upload image or paste URL below';
+    document.getElementById('img-upload-text').textContent = '📷 点击上传图片，或在下方面粘贴图片链接';
     ['f-title','f-category','f-compatible','f-features','f-image','f-markets'].forEach(fid => document.getElementById(fid).value = '');
     document.getElementById('f-image-file').value = '';
 
@@ -307,13 +305,13 @@
   function previewImage(e) {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 500 * 1024) { t('Image too large (max 500KB). Use a URL instead.', 'error'); return; }
+    if (file.size > 500 * 1024) { t('图片过大（最大500KB），请使用链接代替', 'error'); return; }
     const reader = new FileReader();
     reader.onload = function(ev) {
       document.getElementById('f-image').value = ev.target.result;
       document.getElementById('img-preview').src = ev.target.result;
       document.getElementById('img-preview').style.display = 'block';
-      document.getElementById('img-upload-text').textContent = '✅ Image loaded: ' + file.name;
+      document.getElementById('img-upload-text').textContent = '✅ 已加载：' + file.name;
     };
     reader.readAsDataURL(file);
   }
@@ -343,8 +341,8 @@
     const url = editingId ? `/api/products?id=${editingId}` : '/api/products';
     try {
       const r = await fetch(url, { method: editingId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify(data) });
-      if (!r.ok) throw new Error((await r.json()).error || 'Save failed');
-      t(editingId ? 'Product updated' : 'Product created', 'success');
+      if (!r.ok) throw new Error((await r.json()).error || '保存失败');
+      t(editingId ? '产品已更新' : '产品已添加', 'success');
       closeModal(); loadProducts();
     } catch(err) { t(err.message, 'error'); }
   }
@@ -352,11 +350,11 @@
   function editProduct(id) { openModal(id); }
 
   async function deleteProduct() {
-    if (!confirm('Delete this product permanently?')) return;
+    if (!confirm('确认永久删除这件产品？')) return;
     try {
       const r = await fetch(`/api/products?id=${editingId}`, { method: 'DELETE', headers: { Authorization: 'Bearer ' + token } });
-      if (!r.ok) throw new Error('Delete failed');
-      t('Product deleted', 'success'); closeModal(); loadProducts();
+      if (!r.ok) throw new Error('删除失败');
+      t('产品已删除', 'success'); closeModal(); loadProducts();
     } catch(err) { t(err.message, 'error'); }
   }
 
