@@ -2,7 +2,7 @@
 const { product, index } = Astro.props;
 ---
 
-<article class="group border border-steel-800/60 hover:border-crest-gold/30 bg-steel-950/50 transition-all duration-500">
+<article class="product-card group border border-steel-800/60 hover:border-crest-gold/30 bg-steel-950/50 transition-all duration-500" data-product-id={product.id}>
   <div class="relative aspect-[4/3] bg-steel-900 overflow-hidden">
     <img
       src={product.image}
