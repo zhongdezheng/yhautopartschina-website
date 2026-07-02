@@ -43,7 +43,7 @@ const { title = siteConfig.tagline, description = "High-quality piston & piston 
       import { translations } from '../i18n/translations.js';
 
       (function() {
-        const SUPPORTED = ['zh', 'en', 'ar', 'vi', 'th'];
+        const SUPPORTED = ['zh', 'en', 'ru', 'ar', 'vi', 'th'];
         const RTL = ['ar'];
         const p = new URLSearchParams(window.location.search);
         const lang = SUPPORTED.includes(p.get('lang')) ? p.get('lang') : 'zh';

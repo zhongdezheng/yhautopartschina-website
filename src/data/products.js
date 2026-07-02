@@ -38,15 +38,14 @@ export const products = [
 ];
 
 export const siteConfig = {
-  brandName: "FENGGE AUTO PARTS",
-  tagline: "Precision Pistons & Rings for Global Markets",
-  whatsapp: "+8613800000000",
-  email: "sales@fengge-autoparts.com",
-  tiktok: "fengge_autoparts",
-  facebook: "fenggeautoparts",
+  brandName: "YH AUTO PARTS",
+  tagline: "Your Trusted Auto Parts Partner Since 2002",
+  whatsapp: "+8618802074040",
+  email: "info@yhautopartschina.com",
   supportedLanguages: [
     { code: "zh", label: "中文" },
     { code: "en", label: "EN" },
+    { code: "ru", label: "Русский" },
     { code: "ar", label: "العربية" },
     { code: "vi", label: "Tiếng Việt" },
     { code: "th", label: "ไทย" },

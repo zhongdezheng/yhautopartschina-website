@@ -3,7 +3,17 @@ import { siteConfig } from '../data/products';
 ---
 
 <section class="relative min-h-screen flex flex-col justify-center pt-24 pb-16 overflow-hidden">
-  <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-steel-800/20 via-crest-dark to-crest-dark" aria-hidden="true"></div>
+  <!-- Storefront background -->
+  <div class="absolute inset-0" aria-hidden="true">
+    <img
+      src="/images/storefront.jpg"
+      alt="Guangzhou YH Auto Parts Company"
+      class="w-full h-full object-cover"
+      loading="eager"
+    />
+    <div class="absolute inset-0 bg-crest-dark/85 backdrop-blur-[2px]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_var(--crest-dark)_90%)]"></div>
+  </div>
   <div class="absolute inset-0 opacity-[0.03]" style="background-image: repeating-linear-gradient(0deg, transparent, transparent 1px, #C8A96E 1px, #C8A96E 2px); background-size: 60px 60px;" aria-hidden="true"></div>
 
   <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 text-center">
