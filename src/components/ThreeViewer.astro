@@ -1,5 +1,5 @@
 ---
-// ThreeViewer.astro – Realistic piston assembly 3D viewer with floating rings
+// ThreeViewer.astro – Animated engine piston & crankshaft assembly
 ---
 
 <div
@@ -11,16 +11,12 @@
       <div class="absolute inset-0 border-2 border-crest-gold/30 rounded-full animate-ping"></div>
       <div class="absolute inset-0 border-2 border-crest-gold/60 rounded-full"></div>
     </div>
-    <p data-i18n="3d.loading" class="text-steel-400 text-xs tracking-[0.2em] uppercase">Loading 3D Model</p>
-  </div>
-
-  <div id="three-hint" class="absolute top-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
-    <span class="text-steel-500 text-[10px] tracking-wider uppercase bg-crest-dark/80 px-3 py-1 rounded-full border border-steel-800/50">Drag to rotate · Scroll to zoom</span>
+    <p class="text-steel-400 text-xs tracking-[0.2em] uppercase">Loading 3D</p>
   </div>
 
   <div id="three-controls" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-10">
-    <button id="btn-explode" class="text-[10px] sm:text-xs tracking-wider uppercase bg-crest-dark/90 text-steel-300 border border-steel-700 px-3 py-1.5 rounded-full hover:border-crest-gold/50 hover:text-crest-gold transition-all duration-300">⟐ Explode</button>
-    <button id="btn-xray" class="text-[10px] sm:text-xs tracking-wider uppercase bg-crest-dark/90 text-steel-300 border border-steel-700 px-3 py-1.5 rounded-full hover:border-crest-gold/50 hover:text-crest-gold transition-all duration-300">◐ X-Ray</button>
+    <button id="btn-play" class="text-[10px] sm:text-xs tracking-wider uppercase bg-crest-dark/90 text-crest-gold border border-crest-gold/50 px-3 py-1.5 rounded-full hover:bg-crest-dark transition-all duration-300">⏯ Run</button>
+    <button id="btn-speed" class="text-[10px] sm:text-xs tracking-wider uppercase bg-crest-dark/90 text-steel-300 border border-steel-700 px-3 py-1.5 rounded-full hover:border-crest-gold/50 hover:text-crest-gold transition-all duration-300">⏩ 2×</button>
     <button id="btn-reset" class="text-[10px] sm:text-xs tracking-wider uppercase bg-crest-dark/90 text-steel-300 border border-steel-700 px-3 py-1.5 rounded-full hover:border-crest-gold/50 hover:text-crest-gold transition-all duration-300">↺ Reset</button>
   </div>
 </div>
@@ -30,502 +26,435 @@
 
   const container = document.getElementById('canvas-container');
   const loading = document.getElementById('three-loading');
-  const hint = document.getElementById('three-hint');
-  const btnExplode = document.getElementById('btn-explode');
-  const btnXray = document.getElementById('btn-xray');
+  const btnPlay = document.getElementById('btn-play');
+  const btnSpeed = document.getElementById('btn-speed');
   const btnReset = document.getElementById('btn-reset');
 
-  // ==================== SCENE ====================
+  // ======= SCENE =======
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0x0d0d12, 3, 18);
+  scene.background = new THREE.Color(0x0d0d14);
+  scene.fog = new THREE.Fog(0x0d0d14, 5, 16);
 
-  const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 50);
-  camera.position.set(4.5, 2.2, 6.5);
-  camera.lookAt(0, 0.5, 0);
+  const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 50);
+  camera.position.set(5, 3, 9);
+  camera.lookAt(0, 0, 0);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.3;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   container.appendChild(renderer.domElement);
-  renderer.domElement.style.display = 'block';
-  renderer.domElement.style.width = '100%';
-  renderer.domElement.style.height = '100%';
+  renderer.domElement.style.cssText = 'display:block;width:100%;height:100%';
 
-  // ==================== LIGHTING ====================
-  scene.add(new THREE.AmbientLight(0x334455, 1.5));
+  // ======= LIGHTING =======
+  scene.add(new THREE.AmbientLight(0x334466, 2));
+  const key = new THREE.DirectionalLight(0xffeedd, 5);
+  key.position.set(6, 8, 3);
+  key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  key.shadow.camera.near = 0.5; key.shadow.camera.far = 30;
+  key.shadow.camera.left = -6; key.shadow.camera.right = 6;
+  key.shadow.camera.top = 6; key.shadow.camera.bottom = -6;
+  key.shadow.bias = -0.0002;
+  scene.add(key);
 
-  const keyLight = new THREE.DirectionalLight(0xffffff, 4);
-  keyLight.position.set(8, 10, 4);
-  keyLight.castShadow = true;
-  keyLight.shadow.mapSize.width = 1024;
-  keyLight.shadow.mapSize.height = 1024;
-  keyLight.shadow.camera.near = 0.5;
-  keyLight.shadow.camera.far = 30;
-  keyLight.shadow.camera.left = -8;
-  keyLight.shadow.camera.right = 8;
-  keyLight.shadow.camera.top = 8;
-  keyLight.shadow.camera.bottom = -8;
-  keyLight.shadow.bias = -0.0001;
-  scene.add(keyLight);
+  const fill = new THREE.DirectionalLight(0x8899cc, 2);
+  fill.position.set(-3, 1, -2);
+  scene.add(fill);
+  const rim = new THREE.DirectionalLight(0xC8A96E, 2.5);
+  rim.position.set(-1, 0.5, -6);
+  scene.add(rim);
 
-  const fillLight = new THREE.DirectionalLight(0x8899cc, 1.5);
-  fillLight.position.set(-3, 2, -2);
-  scene.add(fillLight);
-
-  const rimLight = new THREE.DirectionalLight(0xC8A96E, 2);
-  rimLight.position.set(0, 1, -5);
-  scene.add(rimLight);
-
-  const bottomLight = new THREE.DirectionalLight(0x445566, 1);
-  bottomLight.position.set(0, -1, 2);
-  scene.add(bottomLight);
-
-  // ==================== FLOOR ====================
-  const floorGeo = new THREE.PlaneGeometry(14, 14);
-  const floorMat = new THREE.MeshStandardMaterial({
-    color: 0x1a1a22,
-    roughness: 0.6,
-    metalness: 0.3,
-  });
-  const floor = new THREE.Mesh(floorGeo, floorMat);
-  floor.rotation.x = -Math.PI / 2;
-  floor.position.y = -2.6;
+  // ======= FLOOR =======
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(16, 16),
+    new THREE.MeshStandardMaterial({ color: 0x1a1a24, roughness: 0.5, metalness: 0.4 })
+  );
+  floor.rotation.x = -Math.PI / 2; floor.position.y = -3.2;
   floor.receiveShadow = true;
-  floor.name = 'floor';
   scene.add(floor);
 
-  // Reflective grid
-  const gridHelper = new THREE.PolarGridHelper(5, 32, 24, 64, 0x333344, 0x222233);
-  gridHelper.position.y = -2.58;
-  scene.add(gridHelper);
+  const grid = new THREE.PolarGridHelper(6, 32, 24, 64, 0x333344, 0x222233);
+  grid.position.y = -3.18;
+  scene.add(grid);
 
-  // ==================== MATERIALS ====================
-  const pistonAluminum = new THREE.MeshStandardMaterial({ color: 0xc8c8cc, roughness: 0.25, metalness: 0.85 });
-  const pistonCrown = new THREE.MeshStandardMaterial({ color: 0x9999aa, roughness: 0.35, metalness: 0.7 });
-  const pistonSkirt = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, roughness: 0.2, metalness: 0.8 });
-  const steelMaterial = new THREE.MeshStandardMaterial({ color: 0x777788, roughness: 0.2, metalness: 0.95 });
-  const ringMaterial = new THREE.MeshStandardMaterial({ color: 0x555566, roughness: 0.15, metalness: 0.98 });
-  const goldRingMat = new THREE.MeshStandardMaterial({ color: 0xc8a96e, roughness: 0.2, metalness: 0.9 });
-  const pinMaterial = new THREE.MeshStandardMaterial({ color: 0x666677, roughness: 0.1, metalness: 0.95 });
-  const rodMaterial = new THREE.MeshStandardMaterial({ color: 0x888899, roughness: 0.25, metalness: 0.85 });
-  const capMaterial = new THREE.MeshStandardMaterial({ color: 0x777788, roughness: 0.2, metalness: 0.88 });
+  // ======= MATERIALS =======
+  const m = {
+    alu: new THREE.MeshStandardMaterial({ color: 0xd0d0d8, roughness: 0.18, metalness: 0.9 }),
+    crown: new THREE.MeshStandardMaterial({ color: 0x9999aa, roughness: 0.3, metalness: 0.7 }),
+    skirt: new THREE.MeshStandardMaterial({ color: 0xbbbbbb, roughness: 0.15, metalness: 0.85 }),
+    ring: new THREE.MeshStandardMaterial({ color: 0x555566, roughness: 0.1, metalness: 0.98 }),
+    goldRing: new THREE.MeshStandardMaterial({ color: 0xc8a96e, roughness: 0.15, metalness: 0.95 }),
+    pin: new THREE.MeshStandardMaterial({ color: 0x666677, roughness: 0.08, metalness: 0.97 }),
+    rod: new THREE.MeshStandardMaterial({ color: 0x9999aa, roughness: 0.2, metalness: 0.88 }),
+    crank: new THREE.MeshStandardMaterial({ color: 0x888899, roughness: 0.2, metalness: 0.9 }),
+    cw: new THREE.MeshStandardMaterial({ color: 0x777788, roughness: 0.25, metalness: 0.85 }),
+    gold: new THREE.MeshStandardMaterial({ color: 0xc8a96e, roughness: 0.2, metalness: 0.9 }),
+  };
 
-  const xrayPiston = new THREE.MeshStandardMaterial({
-    color: 0x8899cc, roughness: 0.3, metalness: 0.3, transparent: true, opacity: 0.45, depthWrite: false
-  });
-  const xrayRing = new THREE.MeshStandardMaterial({
-    color: 0xc8a96e, roughness: 0.2, metalness: 0.5, transparent: true, opacity: 0.6, depthWrite: false
-  });
+  function makePistonAssembly() {
+    const g = new THREE.Group();
 
-  // ==================== PISTON ASSEMBLY ====================
-  const mainGroup = new THREE.Group();
-  scene.add(mainGroup);
+    // Crown
+    const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 0.06, 48), m.crown);
+    crown.position.y = 0; crown.castShadow = true;
+    g.add(crown);
 
-  // -- Piston Crown (top) --
-  const crownGroup = new THREE.Group();
-  const crownGeo = new THREE.CylinderGeometry(0.48, 0.48, 0.08, 64);
-  const crown = new THREE.Mesh(crownGeo, pistonCrown);
-  crown.position.y = 0;
-  crown.castShadow = true;
-  crownGroup.add(crown);
+    const crownTop = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.38, 0.025, 48), m.crown);
+    crownTop.position.y = 0.042; crownTop.castShadow = true;
+    g.add(crownTop);
 
-  // Crown top face with subtle dish
-  const crownTopGeo = new THREE.CylinderGeometry(0.44, 0.48, 0.03, 64);
-  const crownTop = new THREE.Mesh(crownTopGeo, pistonCrown);
-  crownTop.position.y = 0.055;
-  crownTop.castShadow = true;
-  crownGroup.add(crownTop);
+    // Valve reliefs
+    for (let i = 0; i < 4; i++) {
+      const a = (i / 4) * Math.PI * 2 + Math.PI / 4;
+      const r = new THREE.Mesh(
+        new THREE.SphereGeometry(0.08, 12, 6, 0, Math.PI * 2, 0, Math.PI / 3),
+        new THREE.MeshStandardMaterial({ color: 0x777788, roughness: 0.4, metalness: 0.6 })
+      );
+      r.position.set(Math.cos(a) * 0.18, 0.06, Math.sin(a) * 0.18);
+      r.scale.set(1, 0.3, 1);
+      g.add(r);
+    }
 
-  // Valve reliefs (4 small indents)
-  for (let i = 0; i < 4; i++) {
-    const angle = (i / 4) * Math.PI * 2 + Math.PI / 4;
-    const reliefGeo = new THREE.SphereGeometry(0.1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 3);
-    const relief = new THREE.Mesh(reliefGeo, new THREE.MeshStandardMaterial({ color: 0x777788, roughness: 0.4, metalness: 0.6 }));
-    relief.position.x = Math.cos(angle) * 0.22;
-    relief.position.z = Math.sin(angle) * 0.22;
-    relief.position.y = 0.08;
-    relief.scale.set(1, 0.3, 1);
-    crownGroup.add(relief);
+    // Ring belt
+    const belt = new THREE.Mesh(new THREE.CylinderGeometry(0.37, 0.37, 0.24, 48), m.alu);
+    belt.position.y = -0.13; belt.castShadow = true;
+    g.add(belt);
+
+    // Ring grooves
+    for (let i = 0; i < 3; i++) {
+      const groove = new THREE.Mesh(
+        new THREE.TorusGeometry(0.37 - 0.032, 0.032, 10, 48),
+        new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.6, metalness: 0.4 })
+      );
+      groove.rotation.x = Math.PI / 2; groove.position.y = -0.22 - i * 0.07;
+      g.add(groove);
+    }
+
+    // Rings
+    for (let i = 0; i < 3; i++) {
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(0.34, 0.02, 12, 48),
+        i === 0 ? m.goldRing : m.ring
+      );
+      ring.rotation.x = Math.PI / 2; ring.position.y = -0.22 - i * 0.07;
+      ring.castShadow = true;
+      g.add(ring);
+    }
+
+    // Skirt
+    const skirt = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.375, 0.33, 0.26, 48, 1, true), m.skirt
+    );
+    skirt.position.y = -0.36; skirt.castShadow = true;
+    g.add(skirt);
+
+    const bottom = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.33, 0.03, 48), m.alu);
+    bottom.position.y = -0.5; bottom.castShadow = true;
+    g.add(bottom);
+
+    // Wrist pin
+    const pinG = new THREE.Group();
+    const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.56, 24), m.pin);
+    pin.rotation.z = Math.PI / 2;
+    pinG.add(pin);
+    pinG.position.y = -0.42;
+    g.add(pinG);
+
+    g.userData.pinY = pinG.position.y;
+
+    // Connecting rod
+    const rodG = new THREE.Group();
+
+    // Small end
+    const smallEnd = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.12, 24), m.rod);
+    smallEnd.rotation.z = Math.PI / 2;
+    rodG.add(smallEnd);
+
+    // Beam
+    const beamShape = new THREE.Shape();
+    beamShape.moveTo(-0.06, -0.35);
+    beamShape.lineTo(-0.04, 0);
+    beamShape.lineTo(-0.025, 0.06);
+    beamShape.lineTo(0.025, 0.06);
+    beamShape.lineTo(0.04, 0);
+    beamShape.lineTo(0.06, -0.35);
+    beamShape.closePath();
+    const beam = new THREE.Mesh(
+      new THREE.ExtrudeGeometry(beamShape, { steps: 1, depth: 0.06, bevelEnabled: true, bevelThickness: 0.015, bevelSize: 0.01, bevelSegments: 3 }),
+      m.rod
+    );
+    beam.position.set(-0.03, 0, -0.03);
+    beam.castShadow = true;
+    rodG.add(beam);
+
+    // Big end
+    const bigOuter = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.12, 24), m.rod);
+    bigOuter.rotation.z = Math.PI / 2; bigOuter.position.y = -0.35;
+    bigOuter.castShadow = true;
+    rodG.add(bigOuter);
+
+    const bigInner = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.08, 0.08, 0.13, 24),
+      new THREE.MeshStandardMaterial({ color: 0x333344, roughness: 0.5, metalness: 0.4 })
+    );
+    bigInner.rotation.z = Math.PI / 2; bigInner.position.y = -0.35;
+    rodG.add(bigInner);
+
+    rodG.position.y = -0.42;
+    g.add(rodG);
+    g.userData.rodTopY = rodG.position.y;
+
+    return g;
   }
-  crownGroup.position.y = 1.15;
-  mainGroup.add(crownGroup);
 
-  // -- Ring Belt (grooved section) --
-  const ringBelt = new THREE.Group();
-  const beltGeo = new THREE.CylinderGeometry(0.47, 0.47, 0.32, 64);
-  const belt = new THREE.Mesh(beltGeo, pistonAluminum);
-  belt.position.y = 0;
-  belt.castShadow = true;
-  ringBelt.add(belt);
+  function makeCrank(crankRadius) {
+    const g = new THREE.Group();
+    const segs = 32;
 
-  // Ring grooves (3 dark grooves)
-  const grooveDepth = 0.04;
+    // Main shaft
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.8, segs), m.crank);
+    shaft.rotation.z = Math.PI / 2;
+    shaft.castShadow = true;
+    g.add(shaft);
+
+    // Crank throws for 3 pistons
+    for (let i = 0; i < 3; i++) {
+      const angle = (i / 3) * Math.PI * 2;
+      const cx = Math.cos(angle) * crankRadius;
+      const cy = Math.sin(angle) * crankRadius;
+
+      // Crank arm (disc)
+      const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.08, segs), m.crank);
+      arm.rotation.z = Math.PI / 2;
+      arm.position.set(0, cy, cx);
+      arm.castShadow = true;
+      g.add(arm);
+
+      // Crank pin (where rod connects)
+      const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.18, segs), m.pin);
+      pin.rotation.z = Math.PI / 2;
+      pin.position.set(0, cy, cx);
+      g.add(pin);
+
+      // Web / counterweight
+      const webGeo = new THREE.CylinderGeometry(0.14, 0.08, 0.06, segs);
+      const web = new THREE.Mesh(webGeo, m.cw);
+      web.rotation.z = Math.PI / 2;
+      // Opposite side to throw
+      const wAngle = angle + Math.PI;
+      web.position.set(0, Math.sin(wAngle) * crankRadius * 0.6, Math.cos(wAngle) * crankRadius * 0.6);
+      web.castShadow = true;
+      g.add(web);
+    }
+
+    return g;
+  }
+
+  // ======= BUILD ENGINE =======
+  const crankRadius = 0.55;
+  const engineGroup = new THREE.Group();
+  scene.add(engineGroup);
+
+  // Crankshaft
+  const crankGroup = makeCrank(crankRadius);
+  crankGroup.position.y = -2.0;
+  engineGroup.add(crankGroup);
+
+  // 3 pistons at 120° offsets
+  const pistons = [];
+  const rodConnections = [];
   for (let i = 0; i < 3; i++) {
-    const grooveGeo = new THREE.TorusGeometry(0.47 - grooveDepth, grooveDepth, 12, 64);
-    const groove = new THREE.Mesh(grooveGeo, new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.5, metalness: 0.5 }));
-    groove.rotation.x = Math.PI / 2;
-    groove.position.y = -0.12 + i * 0.1;
-    ringBelt.add(groove);
+    const piston = makePistonAssembly();
+    piston.position.z = (i - 1) * 0.9;
+    engineGroup.add(piston);
+    pistons.push(piston);
   }
-  ringBelt.position.y = 0.85;
-  mainGroup.add(ringBelt);
 
-  // -- Piston Rings (actual torus) --
-  const ringsGroup = new THREE.Group();
+  // Cylinder walls (transparent)
   for (let i = 0; i < 3; i++) {
-    const ringGeo = new THREE.TorusGeometry(0.43, 0.025, 16, 64);
-    const ring = new THREE.Mesh(ringGeo, i === 0 ? goldRingMat : ringMaterial);
-    ring.rotation.x = Math.PI / 2;
-    ring.position.y = -0.12 + i * 0.1;
+    const cylGeo = new THREE.CylinderGeometry(0.39, 0.39, 0.4, 48, 1, true);
+    const cyl = new THREE.Mesh(cylGeo, new THREE.MeshStandardMaterial({
+      color: 0x8899cc, roughness: 0.3, metalness: 0.1,
+      transparent: true, opacity: 0.15, depthWrite: false
+    }));
+    cyl.position.set(0, 0.85, (i - 1) * 0.9);
+    engineGroup.add(cyl);
+  }
+
+  // Floating rings
+  const floatRings = [];
+  for (let i = 0; i < 6; i++) {
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(0.34, 0.015, 12, 48),
+      i < 2 ? m.goldRing : m.ring
+    );
     ring.castShadow = true;
-    ring.name = 'ring_' + i;
-    ringsGroup.add(ring);
-  }
-  ringsGroup.position.y = 0.85;
-  mainGroup.add(ringsGroup);
-
-  // -- Piston Body (skirt) --
-  const bodyGroup = new THREE.Group();
-
-  // Main body
-  const bodyGeo = new THREE.CylinderGeometry(0.48, 0.44, 0.35, 64, 1, true);
-  const bodyMesh = new THREE.Mesh(bodyGeo, pistonSkirt);
-  bodyMesh.position.y = 0.05;
-  bodyMesh.castShadow = true;
-  bodyGroup.add(bodyMesh);
-
-  // Bottom cap
-  const bottomGeo = new THREE.CylinderGeometry(0.35, 0.44, 0.04, 64);
-  const bottomCap = new THREE.Mesh(bottomGeo, pistonAluminum);
-  bottomCap.position.y = -0.14;
-  bottomCap.castShadow = true;
-  bodyGroup.add(bottomCap);
-
-  bodyGroup.position.y = 0.5;
-  mainGroup.add(bodyGroup);
-
-  // -- Wrist Pin --
-  const pinGroup = new THREE.Group();
-  const pinGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.72, 32);
-  const wristPin = new THREE.Mesh(pinGeo, pinMaterial);
-  wristPin.rotation.z = Math.PI / 2;
-  wristPin.castShadow = true;
-  pinGroup.add(wristPin);
-
-  // Pin caps
-  for (let side = -1; side <= 1; side += 2) {
-    const capGeo = new THREE.RingGeometry(0.04, 0.085, 32);
-    const capRing = new THREE.Mesh(capGeo, pinMaterial);
-    capRing.position.x = side * 0.36;
-    capRing.rotation.y = Math.PI / 2;
-    pinGroup.add(capRing);
-  }
-  pinGroup.position.y = 0.32;
-  mainGroup.add(pinGroup);
-
-  // -- Connecting Rod --
-  const rodGroup = new THREE.Group();
-
-  // Small end (piston side)
-  const smallEndGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.14, 32);
-  const smallEnd = new THREE.Mesh(smallEndGeo, rodMaterial);
-  smallEnd.rotation.z = Math.PI / 2;
-  smallEnd.castShadow = true;
-  smallEnd.position.y = 0;
-  rodGroup.add(smallEnd);
-
-  // Rod beam
-  const beamShape = new THREE.Shape();
-  beamShape.moveTo(-0.08, -0.5);
-  beamShape.lineTo(-0.06, 0);
-  beamShape.lineTo(-0.035, 0.1);
-  beamShape.lineTo(0.035, 0.1);
-  beamShape.lineTo(0.06, 0);
-  beamShape.lineTo(0.08, -0.5);
-  beamShape.closePath();
-  const extrudeSettings = { steps: 1, depth: 0.08, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.01, bevelSegments: 3 };
-  const beamGeo = new THREE.ExtrudeGeometry(beamShape, extrudeSettings);
-  const beam = new THREE.Mesh(beamGeo, rodMaterial);
-  beam.position.set(-0.04, 0, -0.04);
-  beam.rotation.y = 0;
-  beam.castShadow = true;
-  rodGroup.add(beam);
-
-  // Big end (crank side)
-  const bigEndOuterGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.14, 32);
-  const bigEndOuter = new THREE.Mesh(bigEndOuterGeo, capMaterial);
-  bigEndOuter.rotation.z = Math.PI / 2;
-  bigEndOuter.position.y = -0.5;
-  bigEndOuter.castShadow = true;
-  rodGroup.add(bigEndOuter);
-
-  // Big end inner hole
-  const bigEndInnerGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.15, 32);
-  const bigEndInner = new THREE.Mesh(bigEndInnerGeo, new THREE.MeshStandardMaterial({ color: 0x333344, roughness: 0.5, metalness: 0.4 }));
-  bigEndInner.rotation.z = Math.PI / 2;
-  bigEndInner.position.y = -0.5;
-  rodGroup.add(bigEndInner);
-
-  // Cap bolts
-  for (let side = -1; side <= 1; side += 2) {
-    const boltGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.08, 16);
-    const bolt = new THREE.Mesh(boltGeo, pinMaterial);
-    bolt.position.set(0, -0.5, side * 0.1);
-    bolt.castShadow = true;
-    rodGroup.add(bolt);
-  }
-
-  rodGroup.position.y = -0.15;
-  mainGroup.add(rodGroup);
-
-  // ==================== FLOATING RINGS (orbiting) ====================
-  const floatingRings = [];
-  const ringCount = 8;
-  for (let i = 0; i < ringCount; i++) {
-    const ringGeo = new THREE.TorusGeometry(0.42, 0.02, 16, 48);
-    const ring = new THREE.Mesh(ringGeo, i < 3 ? goldRingMat : ringMaterial);
-    ring.castShadow = true;
-    ring.name = 'float_' + i;
-
-    // Random initial orbit
     ring.userData = {
-      orbitRadius: 2.2 + Math.random() * 1.5,
-      orbitSpeed: 0.15 + Math.random() * 0.5,
-      orbitOffset: Math.random() * Math.PI * 2,
-      verticalAmp: 0.8 + Math.random() * 1.2,
-      verticalSpeed: 0.3 + Math.random() * 0.5,
-      verticalOffset: Math.random() * Math.PI * 2,
-      tiltX: (Math.random() - 0.5) * 1.2,
-      tiltZ: (Math.random() - 0.5) * 1.2,
+      orbitR: 2.5 + Math.random() * 2,
+      orbitSpeed: 0.2 + Math.random() * 0.4,
+      orbitOff: Math.random() * Math.PI * 2,
+      vertAmp: 1.5 + Math.random() * 1,
+      vertSpeed: 0.2 + Math.random() * 0.3,
+      vertOff: Math.random() * Math.PI * 2,
+      tiltX: (Math.random() - 0.5) * 1,
+      tiltZ: (Math.random() - 0.5) * 1,
     };
-
     scene.add(ring);
-    floatingRings.push(ring);
+    floatRings.push(ring);
   }
 
-  // ==================== PARTICLES (sparkle/dust) ====================
+  // Gold particles
   const particlesGeo = new THREE.BufferGeometry();
-  const particlesCount = 200;
-  const particlesPos = new Float32Array(particlesCount * 3);
-  for (let i = 0; i < particlesCount; i++) {
-    particlesPos[i * 3] = (Math.random() - 0.5) * 8;
-    particlesPos[i * 3 + 1] = Math.random() * 5 - 2;
-    particlesPos[i * 3 + 2] = (Math.random() - 0.5) * 8;
+  const pCount = 150;
+  const pPos = new Float32Array(pCount * 3);
+  for (let i = 0; i < pCount; i++) {
+    pPos[i * 3] = (Math.random() - 0.5) * 8;
+    pPos[i * 3 + 1] = Math.random() * 5 - 1;
+    pPos[i * 3 + 2] = (Math.random() - 0.5) * 8;
   }
-  particlesGeo.setAttribute('position', new THREE.BufferAttribute(particlesPos, 3));
-  const particlesMat = new THREE.PointsMaterial({
-    color: 0xC8A96E,
-    size: 0.015,
-    transparent: true,
-    opacity: 0.5,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false,
-  });
-  const particles = new THREE.Points(particlesGeo, particlesMat);
+  particlesGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+  const particles = new THREE.Points(particlesGeo, new THREE.PointsMaterial({
+    color: 0xC8A96E, size: 0.012, transparent: true, opacity: 0.5,
+    blending: THREE.AdditiveBlending, depthWrite: false,
+  }));
   scene.add(particles);
 
-  // ==================== STORED ORIGINAL POSITIONS ====================
-  const originalPositions = new Map();
-  function storePositions() {
-    [crownGroup, ringBelt, ringsGroup, bodyGroup, pinGroup, rodGroup].forEach((g, i) => {
-      originalPositions.set(g, g.position.clone());
-    });
-  }
-  storePositions();
+  // ======= STATE =======
+  let isPlaying = true;
+  let speed = 1;
+  let crankAngle = 0;
 
-  // ==================== STATE ====================
-  let isExploded = false;
-  let isXray = false;
-  let targetExplode = 0;
-  let currentExplode = 0;
+  // Drag rotation
+  let isDragging = false, prevX = 0, prevY = 0;
+  let sceneRotY = 0.5, targetRotY = 0.5;
+  let sceneRotX = 0.3, targetRotX = 0.3;
+  let zoom = 9, targetZoom = 9;
 
-  // ==================== DRAG/ROTATE ====================
-  let isDragging = false;
-  let prevX = 0, prevY = 0;
-  let rotX = 0.3, rotY = 0;
-  let targetRotX = 0.3, targetRotY = 0;
-  let zoomLevel = 6.5;
-
-  container.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    prevX = e.clientX;
-    prevY = e.clientY;
-    if (hint) hint.style.opacity = '0';
+  container.addEventListener('mousedown', e => { isDragging = true; prevX = e.clientX; prevY = e.clientY; });
+  container.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) { isDragging = true; prevX = e.touches[0].clientX; prevY = e.touches[0].clientY; }
   });
-
-  window.addEventListener('mousemove', (e) => {
+  window.addEventListener('mousemove', e => {
     if (!isDragging) return;
-    const dx = e.clientX - prevX;
-    const dy = e.clientY - prevY;
-    targetRotY += dx * 0.005;
-    targetRotX -= dy * 0.005;
+    targetRotY += (e.clientX - prevX) * 0.004;
+    targetRotX -= (e.clientY - prevY) * 0.004;
     targetRotX = Math.max(-1.2, Math.min(1.2, targetRotX));
-    prevX = e.clientX;
-    prevY = e.clientY;
+    prevX = e.clientX; prevY = e.clientY;
   });
-
-  window.addEventListener('mouseup', () => { isDragging = false; });
-
-  // Touch
-  container.addEventListener('touchstart', (e) => {
-    if (e.touches.length === 1) {
-      isDragging = true;
-      prevX = e.touches[0].clientX;
-      prevY = e.touches[0].clientY;
-      if (hint) hint.style.opacity = '0';
-    }
-  });
-  container.addEventListener('touchmove', (e) => {
+  window.addEventListener('touchmove', e => {
     if (!isDragging || e.touches.length !== 1) return;
-    const dx = e.touches[0].clientX - prevX;
-    const dy = e.touches[0].clientY - prevY;
-    targetRotY += dx * 0.005;
-    targetRotX -= dy * 0.005;
+    targetRotY += (e.touches[0].clientX - prevX) * 0.004;
+    targetRotX -= (e.touches[0].clientY - prevY) * 0.004;
     targetRotX = Math.max(-1.2, Math.min(1.2, targetRotX));
-    prevX = e.touches[0].clientX;
-    prevY = e.touches[0].clientY;
+    prevX = e.touches[0].clientX; prevY = e.touches[0].clientY;
   });
-  container.addEventListener('touchend', () => { isDragging = false; });
-
-  // Scroll zoom
-  container.addEventListener('wheel', (e) => {
+  window.addEventListener('mouseup', () => isDragging = false);
+  window.addEventListener('touchend', () => isDragging = false);
+  container.addEventListener('wheel', e => {
     e.preventDefault();
-    zoomLevel += e.deltaY * 0.005;
-    zoomLevel = Math.max(3, Math.min(12, zoomLevel));
+    targetZoom += e.deltaY * 0.005;
+    targetZoom = Math.max(4, Math.min(15, targetZoom));
   }, { passive: false });
 
-  // ==================== CONTROLS ====================
-  btnExplode.addEventListener('click', () => {
-    isExploded = !isExploded;
-    targetExplode = isExploded ? 1 : 0;
-    btnExplode.classList.toggle('text-crest-gold', isExploded);
-    btnExplode.classList.toggle('border-crest-gold/50', isExploded);
+  // Buttons
+  btnPlay.addEventListener('click', () => {
+    isPlaying = !isPlaying;
+    btnPlay.innerHTML = isPlaying ? '⏯ Run' : '▶ Play';
+    btnPlay.classList.toggle('text-crest-gold', isPlaying);
+    btnPlay.classList.toggle('border-crest-gold/50', isPlaying);
   });
 
-  btnXray.addEventListener('click', () => {
-    isXray = !isXray;
-    btnXray.classList.toggle('text-crest-gold', isXray);
-    btnXray.classList.toggle('border-crest-gold/50', isXray);
-
-    const mat = isXray ? xrayPiston : pistonAluminum;
-    [crown, crownTop, belt].forEach(m => { m.material = isXray ? xrayPiston : m.material === crown.material ? pistonCrown : pistonAluminum; });
-    crown.material = isXray ? xrayPiston : pistonCrown;
-    belt.material = isXray ? xrayPiston : pistonAluminum;
-    bodyMesh.material = isXray ? xrayPiston : pistonSkirt;
-    bottomCap.material = isXray ? xrayPiston : pistonAluminum;
-
-    // Update ring colors
-    ringsGroup.children.forEach(r => {
-      if (r.isMesh) r.material = isXray ? xrayRing : (r.name === 'ring_0' ? goldRingMat : ringMaterial);
-    });
-
-    floor.material.opacity = isXray ? 0.3 : 1;
+  btnSpeed.addEventListener('click', () => {
+    speed = speed === 1 ? 2 : speed === 2 ? 4 : 1;
+    btnSpeed.textContent = '⏩ ' + speed + '×';
   });
 
   btnReset.addEventListener('click', () => {
-    targetExplode = 0;
-    isExploded = false;
-    isXray = false;
-    targetRotX = 0.3;
-    targetRotY = 0;
-    zoomLevel = 6.5;
-    btnExplode.classList.remove('text-crest-gold', 'border-crest-gold/50');
-    btnXray.classList.remove('text-crest-gold', 'border-crest-gold/50');
-
-    // Reset materials
-    crown.material = pistonCrown;
-    crownTop.material = pistonCrown;
-    belt.material = pistonAluminum;
-    bodyMesh.material = pistonSkirt;
-    bottomCap.material = pistonAluminum;
-    if (floor.material.opacity !== undefined) floor.material.opacity = 1;
-    ringsGroup.children.forEach((r, i) => {
-      if (r.isMesh) r.material = i === 0 ? goldRingMat : ringMaterial;
-    });
+    targetRotX = 0.3; targetRotY = 0.5;
+    targetZoom = 9; speed = 1;
+    btnSpeed.textContent = '⏩ 1×';
+    if (!isPlaying) {
+      isPlaying = true;
+      btnPlay.innerHTML = '⏯ Run';
+      btnPlay.classList.add('text-crest-gold', 'border-crest-gold/50');
+    }
   });
 
-  // ==================== ANIMATION LOOP ====================
+  // ======= ANIMATION =======
   const clock = new THREE.Clock();
 
   function animate() {
     requestAnimationFrame(animate);
-
     const dt = Math.min(clock.getDelta(), 0.1);
     const t = performance.now() * 0.001;
 
-    // Smooth rotation
-    rotX += (targetRotX - rotX) * 0.08;
-    rotY += (targetRotY - rotY) * 0.08;
+    // Smooth camera
+    sceneRotX += (targetRotX - sceneRotX) * 0.08;
+    sceneRotY += (targetRotY - sceneRotY) * 0.08;
+    zoom += (targetZoom - zoom) * 0.08;
 
-    // Smooth explode
-    currentExplode += (targetExplode - currentExplode) * 0.06;
+    engineGroup.rotation.y = sceneRotY;
+    engineGroup.rotation.x = sceneRotX;
 
-    // Apply rotation to main group
-    mainGroup.rotation.y = rotY;
-    mainGroup.rotation.x = rotX;
+    const d = zoom;
+    camera.position.x = Math.sin(sceneRotY) * d;
+    camera.position.z = Math.cos(sceneRotY) * d;
+    camera.position.y = 1 + sceneRotX * 3;
+    camera.lookAt(0, -0.3, 0);
 
-    // Camera orbit based on rotation
-    const dist = zoomLevel;
-    camera.position.x = Math.sin(rotY) * dist;
-    camera.position.z = Math.cos(rotY) * dist;
-    camera.position.y = 2.2 + rotX * 2.5;
-    camera.lookAt(0, 0.5, 0);
+    // Engine rotation
+    if (isPlaying) {
+      crankAngle += dt * speed * 2.5;
+    }
 
-    // Explode effect
-    const e = currentExplode;
-    const pos = originalPositions;
-    [
-      { g: crownGroup, y: 1.15, dY: 2.5 },
-      { g: ringsGroup, y: 0.85, dY: 1.8 },
-      { g: ringBelt, y: 0.85, dY: 1.3 },
-      { g: bodyGroup, y: 0.5, dY: 0.6 },
-      { g: pinGroup, y: 0.32, dY: -0.1 },
-      { g: rodGroup, y: -0.15, dY: -0.9 },
-    ].forEach(({ g, y, dY }) => {
-      g.position.y = y + dY * e;
+    crankGroup.rotation.x = crankAngle;
+
+    // Update piston positions based on crank angle
+    for (let i = 0; i < 3; i++) {
+      const angle = crankAngle + (i / 3) * Math.PI * 2;
+      const py = Math.cos(angle) * crankRadius;
+      // Piston vertical: top position is ~1.15, stroke is crankRadius*2
+      const pistonY = 0.5 + py;
+      pistons[i].position.y = pistonY;
+
+      // Rod big end follows crank pin
+      const rodG = pistons[i].children.find(c => c.type === 'Group' && c.children.length >= 5);
+      if (rodG) {
+        const rodAngle = Math.asin(Math.sin(angle) * crankRadius / 1.2);
+        rodG.rotation.z = rodAngle;
+      }
+    }
+
+    // Floating rings
+    floatRings.forEach(r => {
+      const d = r.userData;
+      const a = t * d.orbitSpeed + d.orbitOff;
+      r.position.x = Math.cos(a) * d.orbitR;
+      r.position.z = Math.sin(a) * d.orbitR;
+      r.position.y = Math.sin(t * d.vertSpeed + d.vertOff) * d.vertAmp;
+      r.rotation.x = Math.sin(t * 0.7) * d.tiltX + Math.PI / 2;
+      r.rotation.z = Math.cos(t * 0.5) * d.tiltZ;
     });
 
-    // Floating rings animation
-    floatingRings.forEach(ring => {
-      const d = ring.userData;
-      const angle = t * d.orbitSpeed + d.orbitOffset;
-      ring.position.x = Math.cos(angle) * d.orbitRadius;
-      ring.position.z = Math.sin(angle) * d.orbitRadius;
-      ring.position.y = Math.sin(t * d.verticalSpeed + d.verticalOffset) * d.verticalAmp;
-      ring.rotation.x = Math.sin(t * 0.7) * d.tiltX + Math.PI / 2;
-      ring.rotation.z = Math.cos(t * 0.5) * d.tiltZ;
-    });
-
-    // Particles animation
     particles.rotation.y += dt * 0.05;
-    particles.rotation.x += dt * 0.02;
 
     renderer.render(scene, camera);
   }
 
-  // Loading complete
   setTimeout(() => {
-    if (loading) loading.style.opacity = '0';
-    setTimeout(() => { if (loading) loading.style.display = 'none'; }, 400);
+    if (loading) { loading.style.opacity = '0'; setTimeout(() => { if (loading) loading.style.display = 'none'; }, 400); }
   }, 300);
 
   animate();
 
-  // Resize handler
   window.addEventListener('resize', () => {
     camera.aspect = container.clientWidth / container.clientHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(container.clientWidth, container.clientHeight);
   });
 </script>
-
-<style is:global>
-  #three-hint {
-    transition: opacity 1.5s ease;
-  }
-</style>
