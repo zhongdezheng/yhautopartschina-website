@@ -40,7 +40,7 @@ export const products = [
 export const siteConfig = {
   brandName: "YH AUTO PARTS",
   tagline: "Your Trusted Auto Parts Partner Since 2002",
-  whatsapp: "+8618802074040",
+  whatsapp: "8618802074040",
   email: "info@yhautopartschina.com",
   supportedLanguages: [
     { code: "zh", label: "中文" },
