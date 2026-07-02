@@ -47,15 +47,24 @@ import { siteConfig } from '../data/products';
             data-i18n-ph="inquiry.quantityPlaceholder" placeholder="例如：100 套" />
         </div>
         <div>
-          <label data-i18n="inquiry.market" for="market" class="block text-[10px] sm:text-xs tracking-wider uppercase text-steel-400 mb-2">目标市场</label>
-          <select id="market" name="market"
-            class="w-full bg-steel-900 border border-steel-700 text-steel-100 px-3 sm:px-4 py-2.5 sm:py-3 text-sm
-                   focus:border-crest-gold/50 focus:outline-none transition-colors">
-            <option value="" class="bg-steel-900" data-i18n="inquiry.marketPlaceholder">选择地区</option>
-            {siteConfig.targetMarkets.map((m) => (
-              <option value={m.value} class="bg-steel-900">{m.label}</option>
-            ))}
-          </select>
+          <label data-i18n="inquiry.market" for="market-select" class="block text-[10px] sm:text-xs tracking-wider uppercase text-steel-400 mb-2">目标市场</label>
+          <div id="custom-dropdown" class="relative">
+            <button type="button" id="dropdown-btn"
+              class="w-full bg-steel-900 border border-steel-700 text-steel-100 px-3 sm:px-4 py-2.5 sm:py-3 text-sm
+                     focus:border-crest-gold/50 focus:outline-none transition-colors text-left flex items-center justify-between group">
+              <span id="dropdown-label" class="text-steel-400">选择地区</span>
+              <svg class="w-3.5 h-3.5 text-steel-500 group-hover:text-crest-gold/60 transition-colors ml-2 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </button>
+            <div id="dropdown-panel"
+              class="absolute left-0 right-0 top-full mt-1 z-20 bg-steel-900 border border-steel-700 overflow-hidden
+                     max-h-0 opacity-0 pointer-events-none transition-all duration-200 origin-top"
+              style="box-shadow: 0 12px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(200,169,110,0.1);">
+              <!-- Options loaded by JS -->
+            </div>
+            <input type="hidden" id="market-select" name="market" value="" />
+          </div>
         </div>
       </div>
 
@@ -68,3 +77,86 @@ import { siteConfig } from '../data/products';
     </form>
   </div>
 </section>
+
+<script is:inline>
+  (function () {
+    const options = [
+      { value: '', label: '选择地区', placeholder: true },
+      { value: 'southeast-asia', label: 'Southeast Asia' },
+      { value: 'middle-east', label: 'Middle East' },
+      { value: 'africa', label: 'Africa' },
+    ];
+
+    const translations = {
+      zh: { placeholder: '选择地区', label: '目标市场' },
+      en: { placeholder: 'Select region', label: 'Target Market' },
+      ru: { placeholder: 'Выберите регион', label: 'Целевой рынок' },
+      ar: { placeholder: 'اختر المنطقة', label: 'السوق المستهدف' },
+      vi: { placeholder: 'Chọn khu vực', label: 'Thị trường mục tiêu' },
+      th: { placeholder: 'เลือกภูมิภาค', label: 'ตลาดเป้าหมาย' },
+    };
+
+    const p = new URLSearchParams(window.location.search);
+    const lang = ['zh','en','ru','ar','vi','th'].includes(p.get('lang')) ? p.get('lang') : 'zh';
+    const t = translations[lang] || translations.zh;
+
+    const btn = document.getElementById('dropdown-btn');
+    const panel = document.getElementById('dropdown-panel');
+    const label = document.getElementById('dropdown-label');
+    const hidden = document.getElementById('market-select');
+
+    let isOpen = false, selectedValue = '';
+
+    // Build options
+    panel.innerHTML = options.map((o, i) => {
+      const isPH = o.placeholder;
+      const text = isPH ? t.placeholder : o.label;
+      return `<div class="dropdown-option px-3 sm:px-4 py-2 sm:py-2.5 text-sm cursor-pointer transition-colors
+        ${isPH ? 'text-steel-500 italic' : 'text-steel-300 hover:bg-steel-800 hover:text-crest-gold'}
+        border-b border-steel-800/30 last:border-b-0"
+        data-value="${o.value}">${text}</div>`;
+    });
+
+    function open() {
+      isOpen = true;
+      panel.style.maxHeight = '300px';
+      panel.style.opacity = '1';
+      panel.style.pointerEvents = 'auto';
+      btn.querySelector('svg').style.transform = 'rotate(180deg)';
+      btn.style.borderColor = 'rgba(200,169,110,0.5)';
+    }
+
+    function close() {
+      isOpen = false;
+      panel.style.maxHeight = '0';
+      panel.style.opacity = '0';
+      panel.style.pointerEvents = 'none';
+      btn.querySelector('svg').style.transform = 'rotate(0deg)';
+      btn.style.borderColor = '';
+    }
+
+    btn.addEventListener('click', e => { e.stopPropagation(); isOpen ? close() : open(); });
+
+    panel.addEventListener('click', e => {
+      const opt = e.target.closest('.dropdown-option');
+      if (!opt) return;
+      selectedValue = opt.dataset.value;
+      hidden.value = selectedValue;
+      label.textContent = opt.textContent;
+      label.classList.toggle('text-steel-400', !selectedValue);
+      label.classList.toggle('text-crest-gold', !!selectedValue);
+      close();
+    });
+
+    document.addEventListener('click', () => { if (isOpen) close(); });
+  })();
+</script>
+
+<style is:global>
+  .dropdown-option:hover {
+    background: linear-gradient(90deg, rgba(200,169,110,0.08) 0%, transparent 100%);
+  }
+  .dropdown-option:active {
+    background: rgba(200,169,110,0.15);
+  }
+</style>
