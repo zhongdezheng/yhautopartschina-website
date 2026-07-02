@@ -14,6 +14,14 @@ const { title = siteConfig.tagline, description = "High-quality piston & piston 
 
     <title>{title} — {siteConfig.brandName}</title>
 
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.175.0/build/three.module.js"
+        }
+      }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
