@@ -61,9 +61,17 @@ import { products } from '../data/products';
 
 <script is:inline>
   (function () {
-    const allProducts = {
+    const staticProducts = {
       {JSON.stringify(products.map(p => ({ id: p.id, title: p.title, category: p.category, compatible: p.compatible, features: p.features, image: p.image })))}
     };
+    let allProducts = [...staticProducts];
+
+    // Fetch dynamic products from API
+    fetch('/api/products').then(r => r.json()).then(data => {
+      if (Array.isArray(data) && data.length) {
+        allProducts = data;
+      }
+    }).catch(() => {});
 
     const input = document.getElementById('search-input');
     const results = document.getElementById('search-results');
@@ -112,7 +120,16 @@ import { products } from '../data/products';
         if (!terms.length) { hideResults(); return; }
 
         const matches = allProducts.map(p => {
-          const searchText = [p.title, p.compatible, p.category, p.id, ...(p.features || [])].join(' ').toLowerCase();
+          // Build comprehensive search text including details
+          const details = p.details || {};
+          const searchParts = [
+            p.title, p.compatible, p.category, p.id,
+            ...(p.features || []),
+            ...(details.oem || []),
+            ...(details.size || []),
+            ...(details.used || [])
+          ];
+          const searchText = searchParts.filter(Boolean).join(' ').toLowerCase();
           const score = terms.reduce((s, t) => {
             if (searchText.includes(t)) s += 3;
             const exactRe = new RegExp('\\b' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
