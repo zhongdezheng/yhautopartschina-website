@@ -47,6 +47,7 @@
     /* Modal */
     .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:100; display:flex; align-items:flex-start; justify-content:center; opacity:0; pointer-events:none; transition:opacity .2s; padding-top:40px; }
     .modal-overlay.active { opacity:1; pointer-events:auto; }
+    .modal-overlay.active::before { content:''; position:fixed; inset:0; } /* prevent clicks on overlay */
     .modal { background:#111118; border:1px solid #2a2a38; width:95%; max-width:780px; max-height:90vh; overflow-y:auto; }
     .modal-header { padding:20px 28px; border-bottom:1px solid #1a1a28; display:flex; justify-content:space-between; align-items:center; }
     .modal-header h3 { font-size:1.3rem; color:#c8a96e; }
@@ -518,8 +519,11 @@
 
   function s(str) { const d = document.createElement('div'); d.textContent = str||''; return d.innerHTML; }
 
-  // Click outside modal — do NOT close (prevents accidental data loss)
-  // User must use Cancel or ✕ button to close
+  // Prevent overlay clicks from doing anything
+  document.getElementById('modal').addEventListener('click', function(ev) {
+    ev.stopPropagation();
+    ev.preventDefault();
+  });
   document.getElementById('select-all').addEventListener('change', function() {
     document.querySelectorAll('.row-check').forEach(cb => { cb.checked = this.checked; });
     updateBulkBar();
