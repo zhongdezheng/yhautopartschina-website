@@ -518,7 +518,8 @@
 
   function s(str) { const d = document.createElement('div'); d.textContent = str||''; return d.innerHTML; }
 
-  document.getElementById('modal').addEventListener('click', function(ev) { if (ev.target === this) closeModal(); });
+  // Click outside modal — do NOT close (prevents accidental data loss)
+  // User must use Cancel or ✕ button to close
   document.getElementById('select-all').addEventListener('change', function() {
     document.querySelectorAll('.row-check').forEach(cb => { cb.checked = this.checked; });
     updateBulkBar();
