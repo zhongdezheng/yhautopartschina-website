@@ -48,10 +48,11 @@
     .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:100; display:flex; align-items:flex-start; justify-content:center; opacity:0; pointer-events:none; transition:opacity .2s; padding-top:40px; }
     .modal-overlay.active { opacity:1; pointer-events:auto; }
     .modal-overlay.active::before { content:''; position:fixed; inset:0; } /* prevent clicks on overlay */
-    .modal { background:#111118; border:1px solid #2a2a38; width:95%; max-width:780px; max-height:90vh; overflow-y:auto; }
+    .modal { background:#111118; border:1px solid #2a2a38; width:95%; max-width:780px; max-height:90vh; display:flex; flex-direction:column; }
     .modal-header { padding:20px 28px; border-bottom:1px solid #1a1a28; display:flex; justify-content:space-between; align-items:center; }
+    .modal-header { padding:20px 28px; border-bottom:1px solid #1a1a28; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; } 
     .modal-header h3 { font-size:1.3rem; color:#c8a96e; }
-    .modal-body { padding:24px 28px; }
+    .modal-body { padding:24px 28px; overflow-y:auto; flex:1; }
 
     .field { margin-bottom:18px; }
     .field label { display:block; font-size:1rem; color:#999; margin-bottom:6px; font-weight:500; }
@@ -207,7 +208,7 @@
           <input type="text" id="f-markets" placeholder="中东, 东南亚, 非洲（逗号分隔）" />
         </div>
 
-        <div style="display:flex;gap:10px;margin-top:24px">
+        <div style="display:flex;gap:10px;margin-top:24px;position:sticky;bottom:0;background:#111118;padding-top:16px;border-top:1px solid #1a1a28;z-index:5">
           <button type="submit" class="btn btn-primary" id="btn-save">保存产品</button>
           <button type="button" class="btn" onclick="closeModal()">取消</button>
           <button type="button" class="btn btn-danger" id="btn-delete" style="display:none;margin-left:auto" onclick="deleteProduct()">删除产品</button>
