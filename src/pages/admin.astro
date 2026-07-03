@@ -47,7 +47,6 @@
     /* Modal */
     .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:100; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .2s; }
     .modal-overlay.active { opacity:1; pointer-events:auto; }
-    .modal-overlay.active::before { content:''; position:fixed; inset:0; }
     .modal { background:#111118; border:1px solid #2a2a38; width:95%; max-width:780px; max-height:85vh; display:flex; flex-direction:column; overflow:hidden; }
     .modal-header { padding:18px 24px; border-bottom:1px solid #1a1a28; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
     .modal-header h3 { font-size:1.3rem; color:#c8a96e; margin:0; }
@@ -519,11 +518,7 @@
 
   function s(str) { const d = document.createElement('div'); d.textContent = str||''; return d.innerHTML; }
 
-  // Prevent overlay clicks from doing anything
-  document.getElementById('modal').addEventListener('click', function(ev) {
-    ev.stopPropagation();
-    ev.preventDefault();
-  });
+  // Modal can only be closed via Cancel or ✕ button
   document.getElementById('select-all').addEventListener('change', function() {
     document.querySelectorAll('.row-check').forEach(cb => { cb.checked = this.checked; });
     updateBulkBar();
