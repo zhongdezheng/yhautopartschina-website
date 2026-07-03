@@ -171,7 +171,9 @@
         <!-- 5. 尺寸参数 -->
         <div class="field">
           <label>尺寸参数（一行一个）</label>
-          <textarea id="f-size" placeholder="Piston: 84.51mm&#10;Piston pin: 22 × 1.5mm&#10;Piston ring: 84.51 × 1.2 / 1.5 / 2.0mm&#10;..." rows="4"></textarea>
+          <textarea id="f-size" placeholder="Piston:&#10;Piston pin:&#10;Piston ring:&#10;..." rows="4">Piston:
+Piston pin:
+Piston ring:</textarea>
         </div>
 
         <!-- 6. 适用车型 -->
@@ -321,7 +323,10 @@
     document.getElementById('modal-title').textContent = id ? '编辑产品' : '添加产品';
     document.getElementById('btn-delete').style.display = id ? 'inline-block' : 'none';
     document.getElementById('custom-fields').innerHTML = '';
-    ['f-title','f-category','f-oem','f-size','f-used','f-markets','f-image-urls'].forEach(fid => document.getElementById(fid).value = '');
+    ['f-title','f-category','f-oem','f-used','f-markets','f-image-urls'].forEach(fid => document.getElementById(fid).value = '');
+    document.getElementById('f-size').value = 'Piston:
+Piston pin:
+Piston ring:';
     resetImageRows();
 
     if (id) {
