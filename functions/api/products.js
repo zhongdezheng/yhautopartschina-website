@@ -56,12 +56,23 @@ export async function onRequest(context) {
         const body = await request.json();
         const id = url.searchParams.get('id') || body.id;
         if (!id) return new Response(JSON.stringify({ error: 'Missing id' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
-        const features = JSON.stringify(body.features || []);
-        const marketFocus = JSON.stringify(body.marketFocus || []);
+        // Partial update: only update provided fields
+        const existing = await env.DB.prepare('SELECT * FROM products WHERE id = ?').bind(id).first();
+        if (!existing) return new Response(JSON.stringify({ error: 'Not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+        const fields = {
+          title: body.title !== undefined ? body.title : existing.title,
+          category: body.category !== undefined ? body.category : existing.category,
+          compatible: body.compatible !== undefined ? body.compatible : existing.compatible,
+          features: body.features !== undefined ? JSON.stringify(body.features) : existing.features,
+          image: body.image !== undefined ? body.image : existing.image,
+          market_focus: body.marketFocus !== undefined ? JSON.stringify(body.marketFocus) : existing.market_focus,
+          details: body.details !== undefined ? JSON.stringify(body.details) : existing.details,
+          series: body.series !== undefined ? body.series : existing.series,
+          status: body.status !== undefined ? body.status : existing.status,
+        };
         await env.DB.prepare(
-          `UPDATE products SET title=?, category=?, compatible=?, features=?, image=?, market_focus=?, details=?, series=?, status=?, updated_at=datetime('now')
-           WHERE id=?`
-        ).bind(body.title, body.category, body.compatible, features, body.image || '', marketFocus, body.details ? JSON.stringify(body.details) : null, body.series || '', body.status || 'active', id).run();
+          `UPDATE products SET title=?, category=?, compatible=?, features=?, image=?, market_focus=?, details=?, series=?, status=?, updated_at=datetime('now') WHERE id=?`
+        ).bind(fields.title, fields.category, fields.compatible, fields.features, fields.image || '', fields.market_focus, fields.details, fields.series || '', fields.status || 'active', id).run();
         const row = await env.DB.prepare('SELECT * FROM products WHERE id = ?').bind(id).first();
         return json(formatProduct(row));
       }
