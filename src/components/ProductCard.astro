@@ -1,49 +1,116 @@
 ---
 const { product, index } = Astro.props;
+const details = product.details ? (typeof product.details === 'string' ? JSON.parse(product.details) : product.details) : null;
 ---
 
 <article class="product-card group border border-steel-800/60 hover:border-crest-gold/30 bg-steel-950/50 transition-all duration-500" data-product-id={product.id}>
-  <div class="relative aspect-[4/3] bg-steel-900 overflow-hidden">
-    <img
-      src={product.image}
-      alt={product.title}
-      loading="lazy"
-      decoding="async"
-      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-    />
-    <div class="absolute top-3 left-3">
-      <span class="text-[10px] tracking-[0.2em] uppercase bg-crest-dark/80 text-crest-gold px-2 py-1 border-l border-crest-gold/50">
-        {product.category}
-      </span>
+  <div class="aspect-[4/3] overflow-hidden relative bg-steel-950">
+    {product.image ? (
+      <img src={product.image} alt={product.title} class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+    ) : (
+      <div class="w-full h-full flex items-center justify-center text-steel-700 text-xs">暂无图片</div>
+    )}
+    <div class="absolute top-0 left-0 bg-crest-gold text-crest-dark text-[10px] px-2 py-0.5 tracking-wider uppercase font-semibold">
+      {product.category}
     </div>
-    <span class="absolute top-3 right-3 text-steel-500 text-xs font-mono">
-      {(index + 1).toString().padStart(2, '0')}
-    </span>
   </div>
 
-  <div class="p-4 sm:p-5 space-y-3 sm:space-y-4">
-    <h3 class="text-base sm:text-lg font-semibold text-steel-100 leading-snug">{product.title}</h3>
+  <div class="p-4 sm:p-5">
+    <h3 class="text-steel-100 text-sm sm:text-base font-semibold leading-snug mb-2 group-hover:text-crest-gold transition-colors">
+      {product.title}
+    </h3>
 
-    <div class="space-y-1.5">
-      <p data-i18n="products.compatible" class="text-steel-500 text-[10px] sm:text-xs tracking-wider uppercase">适配车型</p>
-      <p class="text-steel-300 text-xs sm:text-sm leading-relaxed">{product.compatible}</p>
-    </div>
+    {details ? (
+      /* --- Detailed View (expandable sections) --- */
+      <div class="space-y-3 mt-3">
+        {details.oem && details.oem.length > 0 && (
+          <div class="detail-section">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-[9px] text-crest-gold tracking-widest uppercase font-semibold">OEM No.</span>
+              <span class="h-px flex-1 bg-crest-gold/20"></span>
+            </div>
+            <div class="detail-content text-steel-400 text-[10px] leading-relaxed" data-expand="oem">
+              {details.oem.slice(0, 3).map(line => <div>{line}</div>)}
+            </div>
+            {details.oem.length > 3 && (
+              <div class="detail-more text-steel-400 text-[10px] leading-relaxed hidden" data-expand="oem-more">
+                {details.oem.slice(3).map(line => <div>{line}</div>)}
+              </div>
+            )}
+            {details.oem.length > 3 && (
+              <button class="detail-toggle text-[9px] text-crest-gold/60 hover:text-crest-gold mt-1 tracking-wider uppercase transition-colors" data-target="oem">+ More</button>
+            )}
+          </div>
+        )}
 
-    <ul class="space-y-1.5 sm:space-y-2 pt-2 border-t border-steel-800/30">
-      {product.features.map((f) => (
-        <li class="flex items-center gap-2 text-xs sm:text-sm text-steel-400">
-          <span class="text-crest-gold text-xs leading-none">▸</span>
-          {f}
-        </li>
-      ))}
-    </ul>
+        {details.size && details.size.length > 0 && (
+          <div class="detail-section">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-[9px] text-crest-gold tracking-widest uppercase font-semibold">Size / Specs</span>
+              <span class="h-px flex-1 bg-crest-gold/20"></span>
+            </div>
+            <div class="detail-content text-steel-400 text-[10px] leading-relaxed" data-expand="size">
+              {details.size.slice(0, 3).map(line => <div>{line}</div>)}
+            </div>
+            {details.size.length > 3 && (
+              <div class="detail-more text-steel-400 text-[10px] leading-relaxed hidden" data-expand="size-more">
+                {details.size.slice(3).map(line => <div>{line}</div>)}
+              </div>
+            )}
+            {details.size.length > 3 && (
+              <button class="detail-toggle text-[9px] text-crest-gold/60 hover:text-crest-gold mt-1 tracking-wider uppercase transition-colors" data-target="size">+ More</button>
+            )}
+          </div>
+        )}
 
-    <div class="flex flex-wrap gap-2 pt-2">
-      {product.marketFocus.map((m) => (
-        <span class="text-[10px] tracking-wider uppercase bg-steel-800/50 text-steel-400 px-2 py-0.5">
-          {m}
-        </span>
-      ))}
-    </div>
+        {details.used && details.used.length > 0 && (
+          <div class="detail-section">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-[9px] text-crest-gold tracking-widest uppercase font-semibold">Used For</span>
+              <span class="h-px flex-1 bg-crest-gold/20"></span>
+            </div>
+            <div class="detail-content text-steel-400 text-[10px] leading-relaxed" data-expand="used">
+              {details.used.slice(0, 3).map(line => <div>{line}</div>)}
+            </div>
+            {details.used.length > 3 && (
+              <div class="detail-more text-steel-400 text-[10px] leading-relaxed hidden" data-expand="used-more">
+                {details.used.slice(3).map(line => <div>{line}</div>)}
+              </div>
+            )}
+            {details.used.length > 3 && (
+              <button class="detail-toggle text-[9px] text-crest-gold/60 hover:text-crest-gold mt-1 tracking-wider uppercase transition-colors" data-target="used">+ More</button>
+            )}
+          </div>
+        )}
+      </div>
+    ) : (
+      /* --- Simple View (fallback) --- */
+      <div>
+        <p class="text-steel-500 text-[10px] sm:text-xs leading-relaxed mb-3">
+          <span class="text-steel-400 font-medium">适配车型:</span> {product.compatible}
+        </p>
+        {product.features && product.features.length > 0 && (
+          <div class="flex flex-wrap gap-1.5">
+            {product.features.map(f => (
+              <span class="text-[9px] sm:text-[10px] px-2 py-0.5 border border-steel-800 text-steel-400">{f}</span>
+            ))}
+          </div>
+        )}
+      </div>
+    )}
   </div>
 </article>
+
+<script is:inline>
+  document.querySelectorAll('.detail-toggle').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const target = this.dataset.target;
+      const moreEl = document.querySelector(`[data-expand="${target}-more"]`);
+      if (moreEl) {
+        const isHidden = moreEl.classList.contains('hidden');
+        moreEl.classList.toggle('hidden');
+        this.textContent = isHidden ? '- Less' : '+ More';
+      }
+    });
+  });
+</script>

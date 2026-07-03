@@ -35,14 +35,15 @@ export async function onRequest(context) {
         const id = body.id || slugify(body.title);
         const features = JSON.stringify(body.features || []);
         const marketFocus = JSON.stringify(body.marketFocus || []);
+        const details = body.details ? JSON.stringify(body.details) : null;
         await env.DB.prepare(
-          `INSERT INTO products (id, title, category, compatible, features, image, market_focus)
-           VALUES (?, ?, ?, ?, ?, ?, ?)
+          `INSERT INTO products (id, title, category, compatible, features, image, market_focus, details)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)
            ON CONFLICT(id) DO UPDATE SET
              title=excluded.title, category=excluded.category, compatible=excluded.compatible,
              features=excluded.features, image=excluded.image, market_focus=excluded.market_focus,
-             updated_at=datetime('now')`
-        ).bind(id, body.title, body.category, body.compatible, features, body.image || '', marketFocus).run();
+             details=excluded.details, updated_at=datetime('now')`
+        ).bind(id, body.title, body.category, body.compatible, features, body.image || '', marketFocus, details).run();
         const row = await env.DB.prepare('SELECT * FROM products WHERE id = ?').bind(id).first();
         return json(formatProduct(row), 201);
       }
@@ -54,9 +55,9 @@ export async function onRequest(context) {
         const features = JSON.stringify(body.features || []);
         const marketFocus = JSON.stringify(body.marketFocus || []);
         await env.DB.prepare(
-          `UPDATE products SET title=?, category=?, compatible=?, features=?, image=?, market_focus=?, updated_at=datetime('now')
+          `UPDATE products SET title=?, category=?, compatible=?, features=?, image=?, market_focus=?, details=?, updated_at=datetime('now')
            WHERE id=?`
-        ).bind(body.title, body.category, body.compatible, features, body.image || '', marketFocus, id).run();
+        ).bind(body.title, body.category, body.compatible, features, body.image || '', marketFocus, body.details ? JSON.stringify(body.details) : null, id).run();
         const row = await env.DB.prepare('SELECT * FROM products WHERE id = ?').bind(id).first();
         return json(formatProduct(row));
       }
@@ -91,6 +92,7 @@ function formatProduct(row) {
     ...row,
     features: safeParse(row.features),
     market_focus: safeParse(row.market_focus),
+    details: row.details ? safeParse(row.details) : null,
   };
 }
 
