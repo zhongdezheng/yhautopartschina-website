@@ -92,7 +92,11 @@ import { products } from '../data/products';
     }
 
     function getMatchTerms(query) {
-      return query.toLowerCase().replace(/[-_/\s]+/g, ' ').trim().split(/\s+/).filter(Boolean);
+      // Normalize: remove spaces, dashes, slashes for OEM-style matching
+      const normalized = query.replace(/[-_\/\s]+/g, '').toLowerCase().trim();
+      const original = query.toLowerCase().replace(/[-_\/]+/g, ' ').trim();
+      const terms = [...new Set([...original.split(/\s+/).filter(Boolean), normalized].filter(t => t.length >= 2))];
+      return terms;
     }
 
     function highlightMatch(text, terms) {
@@ -130,7 +134,12 @@ import { products } from '../data/products';
             ...(details.used || [])
           ];
           const searchText = searchParts.filter(Boolean).join(' ').toLowerCase();
+          const searchTextNoSpaces = searchText.replace(/[-_\s]+/g, '');
           const score = terms.reduce((s, t) => {
+            const tNoSpace = t.replace(/\s+/g, '');
+            // Exact OEM match (without spaces) = highest score
+            if (searchTextNoSpaces.includes(tNoSpace)) s += 8;
+            // Normal match
             if (searchText.includes(t)) s += 3;
             const exactRe = new RegExp('\\b' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
             if (exactRe.test(searchText)) s += 5;

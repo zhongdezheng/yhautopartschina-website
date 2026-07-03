@@ -84,19 +84,19 @@ import { products, siteConfig } from '../data/products';
               const hasMore = hidden.length > 0;
               const dataId = uid + '-' + id;
               return `
-                <div class="detail-section mt-2">
-                  <div class="flex items-center gap-2 mb-1">
-                    <span class="text-[9px] text-crest-gold tracking-widest uppercase font-semibold">${title}</span>
+                <div class="detail-section mt-3">
+                  <div class="flex items-center gap-2 mb-1.5">
+                    <span class="text-[11px] text-crest-gold tracking-widest uppercase font-semibold">${title}</span>
                     <span class="h-px flex-1 bg-crest-gold/20"></span>
                   </div>
-                  <div class="text-steel-400 text-[10px] leading-relaxed" data-section="${dataId}">
+                  <div class="text-steel-400 text-xs sm:text-sm leading-relaxed" data-section="${dataId}">
                     ${visible.map(l => '<div>' + escHtml(l) + '</div>').join('')}
                   </div>
                   ${hasMore ? `
-                  <div class="text-steel-400 text-[10px] leading-relaxed hidden" data-section="${dataId}-more">
+                  <div class="text-steel-400 text-xs sm:text-sm leading-relaxed hidden" data-section="${dataId}-more">
                     ${hidden.map(l => '<div>' + escHtml(l) + '</div>').join('')}
                   </div>
-                  <button class="detail-more-btn text-[9px] text-crest-gold/60 hover:text-crest-gold mt-0.5 tracking-wider uppercase transition-colors" data-target="${dataId}">+ More</button>` : ''}
+                  <button class="detail-more-btn text-[11px] text-crest-gold/60 hover:text-crest-gold mt-1 tracking-wider uppercase transition-colors" data-target="${dataId}">+ More</button>` : ''}
                 </div>`;
             }
 

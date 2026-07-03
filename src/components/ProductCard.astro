@@ -22,23 +22,23 @@ const details = product.details ? (typeof product.details === 'string' ? JSON.pa
 
     {details ? (
       /* --- Detailed View (expandable sections) --- */
-      <div class="space-y-3 mt-3">
+      <div class="space-y-3 mt-4">
         {details.oem && details.oem.length > 0 && (
           <div class="detail-section">
-            <div class="flex items-center gap-2 mb-1">
-              <span class="text-[9px] text-crest-gold tracking-widest uppercase font-semibold">OEM No.</span>
+            <div class="flex items-center gap-2 mb-1.5">
+              <span class="text-[11px] text-crest-gold tracking-widest uppercase font-semibold">OEM No.</span>
               <span class="h-px flex-1 bg-crest-gold/20"></span>
             </div>
-            <div class="detail-content text-steel-400 text-[10px] leading-relaxed" data-expand="oem">
+            <div class="detail-content text-steel-400 text-xs sm:text-sm leading-relaxed" data-expand="oem">
               {details.oem.slice(0, 3).map(line => <div>{line}</div>)}
             </div>
             {details.oem.length > 3 && (
-              <div class="detail-more text-steel-400 text-[10px] leading-relaxed hidden" data-expand="oem-more">
+              <div class="detail-more text-steel-400 text-xs sm:text-sm leading-relaxed hidden" data-expand="oem-more">
                 {details.oem.slice(3).map(line => <div>{line}</div>)}
               </div>
             )}
             {details.oem.length > 3 && (
-              <button class="detail-toggle text-[9px] text-crest-gold/60 hover:text-crest-gold mt-1 tracking-wider uppercase transition-colors" data-target="oem">+ More</button>
+              <button class="detail-toggle text-[11px] text-crest-gold/60 hover:text-crest-gold mt-1 tracking-wider uppercase transition-colors" data-target="oem">+ More</button>
             )}
           </div>
         )}
@@ -46,10 +46,10 @@ const details = product.details ? (typeof product.details === 'string' ? JSON.pa
         {details.size && details.size.length > 0 && (
           <div class="detail-section">
             <div class="flex items-center gap-2 mb-1">
-              <span class="text-[9px] text-crest-gold tracking-widest uppercase font-semibold">Size / Specs</span>
+              <span class="text-[11px] text-crest-gold tracking-widest uppercase font-semibold">Size / Specs</span>
               <span class="h-px flex-1 bg-crest-gold/20"></span>
             </div>
-            <div class="detail-content text-steel-400 text-[10px] leading-relaxed" data-expand="size">
+            <div class="detail-content text-steel-400 text-xs sm:text-sm leading-relaxed" data-expand="size">
               {details.size.slice(0, 3).map(line => <div>{line}</div>)}
             </div>
             {details.size.length > 3 && (
@@ -58,7 +58,7 @@ const details = product.details ? (typeof product.details === 'string' ? JSON.pa
               </div>
             )}
             {details.size.length > 3 && (
-              <button class="detail-toggle text-[9px] text-crest-gold/60 hover:text-crest-gold mt-1 tracking-wider uppercase transition-colors" data-target="size">+ More</button>
+              <button class="detail-toggle text-[11px] text-crest-gold/60 hover:text-crest-gold mt-1 tracking-wider uppercase transition-colors" data-target="size">+ More</button>
             )}
           </div>
         )}
@@ -66,10 +66,10 @@ const details = product.details ? (typeof product.details === 'string' ? JSON.pa
         {details.used && details.used.length > 0 && (
           <div class="detail-section">
             <div class="flex items-center gap-2 mb-1">
-              <span class="text-[9px] text-crest-gold tracking-widest uppercase font-semibold">Used For</span>
+              <span class="text-[11px] text-crest-gold tracking-widest uppercase font-semibold">Used For</span>
               <span class="h-px flex-1 bg-crest-gold/20"></span>
             </div>
-            <div class="detail-content text-steel-400 text-[10px] leading-relaxed" data-expand="used">
+            <div class="detail-content text-steel-400 text-xs sm:text-sm leading-relaxed" data-expand="used">
               {details.used.slice(0, 3).map(line => <div>{line}</div>)}
             </div>
             {details.used.length > 3 && (
@@ -78,7 +78,7 @@ const details = product.details ? (typeof product.details === 'string' ? JSON.pa
               </div>
             )}
             {details.used.length > 3 && (
-              <button class="detail-toggle text-[9px] text-crest-gold/60 hover:text-crest-gold mt-1 tracking-wider uppercase transition-colors" data-target="used">+ More</button>
+              <button class="detail-toggle text-[11px] text-crest-gold/60 hover:text-crest-gold mt-1 tracking-wider uppercase transition-colors" data-target="used">+ More</button>
             )}
           </div>
         )}
