@@ -27,7 +27,8 @@ export async function onRequest(context) {
           if (!row) return new Response(JSON.stringify({ error: 'Not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
           return json(formatProduct(row));
         }
-        const { results } = await env.DB.prepare('SELECT * FROM products ORDER BY updated_at DESC').all();
+        const status = url.searchParams.get('status') || 'active';
+        const { results } = await env.DB.prepare('SELECT * FROM products WHERE status = ? ORDER BY updated_at DESC').bind(status).all();
         return json(results.map(formatProduct));
       }
 
@@ -37,14 +38,16 @@ export async function onRequest(context) {
         const features = JSON.stringify(body.features || []);
         const marketFocus = JSON.stringify(body.marketFocus || []);
         const details = body.details ? JSON.stringify(body.details) : null;
+        const series = body.series || '';
+        const status = body.status || 'active';
         await env.DB.prepare(
-          `INSERT INTO products (id, title, category, compatible, features, image, market_focus, details)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          `INSERT INTO products (id, title, category, compatible, features, image, market_focus, details, series, status)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
            ON CONFLICT(id) DO UPDATE SET
              title=excluded.title, category=excluded.category, compatible=excluded.compatible,
              features=excluded.features, image=excluded.image, market_focus=excluded.market_focus,
-             details=excluded.details, updated_at=datetime('now')`
-        ).bind(id, body.title, body.category, body.compatible, features, body.image || '', marketFocus, details).run();
+             details=excluded.details, series=excluded.series, status=excluded.status, updated_at=datetime('now')`
+        ).bind(id, body.title, body.category, body.compatible, features, body.image || '', marketFocus, details, series, status).run();
         const row = await env.DB.prepare('SELECT * FROM products WHERE id = ?').bind(id).first();
         return json(formatProduct(row), 201);
       }
@@ -56,9 +59,9 @@ export async function onRequest(context) {
         const features = JSON.stringify(body.features || []);
         const marketFocus = JSON.stringify(body.marketFocus || []);
         await env.DB.prepare(
-          `UPDATE products SET title=?, category=?, compatible=?, features=?, image=?, market_focus=?, details=?, updated_at=datetime('now')
+          `UPDATE products SET title=?, category=?, compatible=?, features=?, image=?, market_focus=?, details=?, series=?, status=?, updated_at=datetime('now')
            WHERE id=?`
-        ).bind(body.title, body.category, body.compatible, features, body.image || '', marketFocus, body.details ? JSON.stringify(body.details) : null, id).run();
+        ).bind(body.title, body.category, body.compatible, features, body.image || '', marketFocus, body.details ? JSON.stringify(body.details) : null, body.series || '', body.status || 'active', id).run();
         const row = await env.DB.prepare('SELECT * FROM products WHERE id = ?').bind(id).first();
         return json(formatProduct(row));
       }
@@ -66,8 +69,8 @@ export async function onRequest(context) {
       case 'DELETE': {
         const id = url.searchParams.get('id');
         if (!id) return new Response(JSON.stringify({ error: 'Missing id' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
-        await env.DB.prepare('DELETE FROM products WHERE id = ?').bind(id).run();
-        return json({ deleted: id });
+        await env.DB.prepare('UPDATE products SET status=?, updated_at=datetime(?) WHERE id=?').bind('archived', 'now', id).run();
+        return json({ archived: id });
       }
 
       default:

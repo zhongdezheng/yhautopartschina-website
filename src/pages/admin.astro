@@ -126,6 +126,15 @@
       <button class="btn btn-danger btn-xs" onclick="bulkDelete()">批量删除</button>
     </div>
   </div>
+
+  <h2>已下架产品</h2>
+  <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>图片</th><th>产品名称</th><th>系列</th><th style="width:100px">操作</th></tr></thead>
+      <tbody id="archived-list"><tr><td colspan="4" style="text-align:center;color:#555;padding:20px">正在加载...</td></tr></tbody>
+    </table>
+  </div>
+</div>
 </div>
 
 <!-- 产品编辑弹窗 -->
@@ -144,6 +153,19 @@
         </div>
 
         <!-- 2. 品类 -->
+        <div class="field">
+          <label>产品系列 *</label>
+          <select id="f-series" style="width:100%;padding:12px 16px;background:#1a1a24;border:1px solid #333;color:#d0d0d8;font-size:1.05rem;outline:none">
+            <option value="">请选择系列</option>
+            <option value="德系">德系 (German)</option>
+            <option value="韩系">韩系 (Korean)</option>
+            <option value="日系">日系 (Japanese)</option>
+            <option value="中国">中国 (Chinese)</option>
+            <option value="other">其他（手动填写）</option>
+          </select>
+          <input type="text" id="f-series-other" placeholder="请输入其他系列名称" style="display:none;width:100%;margin-top:8px;padding:12px 16px;background:#1a1a24;border:1px solid #333;color:#d0d0d8;font-size:1.05rem;outline:none" />
+        </div>
+
         <div class="field">
           <label>品类 *</label>
           <input type="text" id="f-category" required placeholder="例如：发动机活塞总成" list="category-list" />

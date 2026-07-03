@@ -11,7 +11,7 @@ let token = localStorage.getItem('yh_admin_token');
     token = document.getElementById('login-token').value.trim();
     if (!token) return t('请输入管理令牌', 'error');
     fetch('/api/products', { headers: { Authorization: 'Bearer ' + token } })
-      .then(r => r.ok ? (localStorage.setItem('yh_admin_token', token), showMain(), loadProducts()) : t('令牌无效', 'error'))
+      .then(r => r.ok ? (localStorage.setItem('yh_admin_token', token), showMain(), loadProducts(), loadArchived()) : t('令牌无效', 'error'))
       .catch(() => t('连接失败，请刷新重试', 'error'));
   }
 
@@ -114,6 +114,9 @@ let token = localStorage.getItem('yh_admin_token');
     document.getElementById('btn-delete').style.display = id ? 'inline-block' : 'none';
     document.getElementById('custom-fields').innerHTML = '';
     ['f-title','f-category','f-oem','f-used','f-markets','f-image-urls'].forEach(fid => document.getElementById(fid).value = '');
+    document.getElementById('f-series').value = '';
+    document.getElementById('f-series-other').style.display = 'none';
+    document.getElementById('f-series-other').value = '';
     document.getElementById('f-size-piston').value = '';
     document.getElementById('f-size-pin').value = '';
     document.getElementById('f-size-ring').value = '';
@@ -126,6 +129,9 @@ let token = localStorage.getItem('yh_admin_token');
       if (p) {
         document.getElementById('f-title').value = p.title || '';
         document.getElementById('f-category').value = p.category || '';
+        var ser = p.series || '';
+        if (['德系','韩系','日系','中国'].includes(ser)) { document.getElementById('f-series').value = ser; }
+        else if (ser) { document.getElementById('f-series').value = 'other'; document.getElementById('f-series-other').style.display='block'; document.getElementById('f-series-other').value = ser; }
         document.getElementById('f-markets').value = (p.market_focus||[]).join(', ');
         const d = p.details || {};
         document.getElementById('f-oem').value = (d.oem||[]).join('\n');
@@ -198,6 +204,11 @@ let token = localStorage.getItem('yh_admin_token');
   }
 
   // Custom fields
+  document.getElementById('f-series').addEventListener('change', function() {
+    var o = document.getElementById('f-series-other');
+    o.style.display = this.value === 'other' ? 'block' : 'none';
+  });
+
   function addCustomField(key, val) {
     const id = 'cf' + (customFieldCount++);
     const container = document.getElementById('custom-fields');
@@ -251,6 +262,7 @@ let token = localStorage.getItem('yh_admin_token');
       if (k) extra[k] = v || '';
     });
     const data = {
+      series: (function(){var s=document.getElementById('f-series').value;return s==='other'?document.getElementById('f-series-other').value.trim():s;})(),
       title: document.getElementById('f-title').value.trim(),
       category: document.getElementById('f-category').value.trim(),
       compatible: document.getElementById('f-title').value.replace(/\n/g, ' ').trim(),
@@ -276,6 +288,33 @@ let token = localStorage.getItem('yh_admin_token');
       t(editingId ? '产品已更新' : '产品已添加', 'success');
       closeModal(); loadProducts();
     } catch(err) { t(err.message, 'error'); }
+  }
+
+
+  async function loadArchived() {
+    try {
+      const r = await fetch('/api/products?status=archived');
+      const data = Array.isArray(r) ? r : (await r.json());
+      document.getElementById('archived-list').innerHTML = data.length === 0 
+        ? '<tr><td colspan="4" style="text-align:center;color:#555;padding:20px">没有已下架的产品</td></tr>'
+        : data.map(p => `<tr>
+          <td class="img-td">${(p.image||'').split(',')[0] ? '<img src="'+(p.image||'').split(',')[0]+'" />' : '<div class="no-img">无图</div>'}</td>
+          <td><strong style="color:#e0e0e8">${s(p.title)}</strong></td>
+          <td><span class="tag gold">${s(p.series||'')}</span></td>
+          <td><button class="btn btn-sm" onclick="restoreProduct('${p.id}')">重新上架</button></td>
+        </tr>`).join('');
+    } catch {
+      document.getElementById('archived-list').innerHTML = '<tr><td colspan="4" style="text-align:center;color:#a44">加载失败</td></tr>';
+    }
+  }
+
+  async function restoreProduct(id) {
+    try {
+      await fetch('/api/products?id='+id, { method:'PUT', headers:{'Content-Type':'application/json',Authorization:'Bearer '+token}, body:JSON.stringify({status:'active',image:''}) });
+      t('产品已上架', 'success');
+      loadProducts();
+      loadArchived();
+    } catch { t('上架失败', 'error'); }
   }
 
   function editProduct(id) { openModal(id); }
