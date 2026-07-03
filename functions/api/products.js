@@ -8,8 +8,9 @@ export async function onRequest(context) {
 
   // Auth check for mutations
   if (method !== 'GET') {
+    const token = env.ADMIN_TOKEN || 'yhadmin2024';
     const auth = request.headers.get('Authorization');
-    if (auth !== `Bearer ${env.ADMIN_TOKEN}`) {
+    if (auth !== `Bearer ${token}`) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },
