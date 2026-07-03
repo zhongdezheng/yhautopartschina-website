@@ -60,12 +60,12 @@ export async function onRequest(context) {
         if (body.details !== undefined) details = body.details;
         if (body.series !== undefined) details.series = body.series;
         const fields = {
-          title: body.title !== undefined ? body.title : existing.title,
-          category: body.category !== undefined ? body.category : existing.category,
-          compatible: body.compatible !== undefined ? body.compatible : existing.compatible,
-          features: body.features !== undefined ? JSON.stringify(body.features) : existing.features,
-          image: body.image !== undefined ? body.image : existing.image,
-          market_focus: body.marketFocus !== undefined ? JSON.stringify(body.marketFocus) : existing.market_focus,
+          title: body.title !== undefined ? body.title : (existing.title || ''),
+          category: body.category !== undefined ? body.category : (existing.category || ''),
+          compatible: body.compatible !== undefined ? body.compatible : (existing.compatible || ''),
+          features: body.features !== undefined ? JSON.stringify(body.features) : (existing.features || '[]'),
+          image: body.image !== undefined ? body.image : (existing.image || ''),
+          market_focus: body.marketFocus !== undefined ? JSON.stringify(body.marketFocus) : (existing.market_focus || '[]'),
           details: JSON.stringify(details),
         };
         await env.DB.prepare(
