@@ -170,10 +170,19 @@
 
         <!-- 5. 尺寸参数 -->
         <div class="field">
-          <label>尺寸参数（一行一个）</label>
-          <textarea id="f-size" placeholder="Piston:&#10;Piston pin:&#10;Piston ring:&#10;..." rows="4">Piston:
-Piston pin:
-Piston ring:</textarea>
+          <label>尺寸参数</label>
+          <div class="field-row" style="margin-bottom:10px">
+            <div class="field"><label style="font-size:0.85rem;color:#c8a96e">Piston</label><input type="text" id="f-size-piston" placeholder="84.51mm" /></div>
+            <div class="field"><label style="font-size:0.85rem;color:#c8a96e">Piston pin</label><input type="text" id="f-size-pin" placeholder="22 × 1.5mm" /></div>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label style="font-size:0.85rem;color:#c8a96e">Piston ring</label>
+            <input type="text" id="f-size-ring" placeholder="84.51 × 1.2 / 1.5 / 2.0mm" />
+          </div>
+          <div id="size-extra"></div>
+          <button type="button" class="add-row-btn" onclick="addSizeRow()" style="margin-top:8px">
+            <span style="font-size:1.2rem">＋</span> 添加其他尺寸参数
+          </button>
         </div>
 
         <!-- 6. 适用车型 -->
@@ -214,6 +223,7 @@ Piston ring:</textarea>
   let products = [];
   let editingId = null;
   let customFieldCount = 0;
+  let sizeExtraCount = 0;
 
   if (token) { showMain(); loadProducts(); }
   else { document.getElementById('login-screen').style.display = 'block'; }
@@ -324,9 +334,11 @@ Piston ring:</textarea>
     document.getElementById('btn-delete').style.display = id ? 'inline-block' : 'none';
     document.getElementById('custom-fields').innerHTML = '';
     ['f-title','f-category','f-oem','f-used','f-markets','f-image-urls'].forEach(fid => document.getElementById(fid).value = '');
-    document.getElementById('f-size').value = 'Piston:
-Piston pin:
-Piston ring:';
+    document.getElementById('f-size-piston').value = '';
+    document.getElementById('f-size-pin').value = '';
+    document.getElementById('f-size-ring').value = '';
+    document.getElementById('size-extra').innerHTML = '';
+    sizeExtraCount = 0;
     resetImageRows();
 
     if (id) {
@@ -337,7 +349,21 @@ Piston ring:';
         document.getElementById('f-markets').value = (p.market_focus||[]).join(', ');
         const d = p.details || {};
         document.getElementById('f-oem').value = (d.oem||[]).join('\n');
-        document.getElementById('f-size').value = (d.size||[]).join('\n');
+        // Parse size lines
+        const sizeLines = d.size || [];
+        sizeLines.forEach(line => {
+          const m = line.match(/^(.+?):\s*(.*)$/) || line.match(/^(.+?)\s+(.+)$/);
+          if (m) {
+            const key = m[1].trim();
+            const val = m[2].trim();
+            if (/piston$/i.test(key.replace(/\s+/g,''))) { document.getElementById('f-size-piston').value = val; }
+            else if (/pin$/i.test(key.replace(/\s+/g,''))) { document.getElementById('f-size-pin').value = val; }
+            else if (/ring$/i.test(key.replace(/\s+/g,''))) { document.getElementById('f-size-ring').value = val; }
+            else { addSizeRow(key, val); }
+          } else if (line.trim()) {
+            addSizeRow('', line.trim());
+          }
+        });
         document.getElementById('f-used').value = (d.used||[]).join('\n');
         // Load images
         const imgs = (p.image||'').split(',').filter(Boolean);
@@ -405,8 +431,36 @@ Piston ring:';
     container.appendChild(row);
   }
 
+  function addSizeRow(label, val) {
+    const id = 'sz' + (sizeExtraCount++);
+    const container = document.getElementById('size-extra');
+    const row = document.createElement('div');
+    row.className = 'dynamic-row';
+    row.innerHTML = `
+      <div class="field"><input type="text" placeholder="参数名" value="${s(label||'')}" data-sz-label="${id}" style="max-width:150px" /></div>
+      <div class="field"><input type="text" placeholder="参数值" value="${s(val||'')}" data-sz-val="${id}" /></div>
+      <button type="button" class="btn-remove" onclick="this.parentElement.remove()">✕</button>
+    `;
+    container.appendChild(row);
+  }
+
   async function saveProduct(e) {
     e.preventDefault();
+    function collectSizeLines() {
+      const lines = [];
+      const pv = document.getElementById('f-size-piston').value.trim();
+      const inv = document.getElementById('f-size-pin').value.trim();
+      const rv = document.getElementById('f-size-ring').value.trim();
+      if (pv) lines.push('Piston: ' + pv);
+      if (inv) lines.push('Piston pin: ' + inv);
+      if (rv) lines.push('Piston ring: ' + rv);
+      document.querySelectorAll('[data-sz-val]').forEach(el => {
+        const lbl = el.parentElement.parentElement.querySelector('[data-sz-label]')?.value?.trim();
+        const val = el.value.trim();
+        if (lbl && val) lines.push(lbl + ': ' + val);
+      });
+      return lines;
+    }
     // Collect images
     const urlImgs = document.getElementById('f-image-urls').value.split(',').map(s => s.trim()).filter(Boolean);
     const allImgs = [...tempImages, ...urlImgs];
@@ -426,7 +480,7 @@ Piston ring:';
       marketFocus: document.getElementById('f-markets').value.split(',').map(s => s.trim()).filter(Boolean),
       details: {
         oem: document.getElementById('f-oem').value.split('\n').map(s => s.trim()).filter(Boolean),
-        size: document.getElementById('f-size').value.split('\n').map(s => s.trim()).filter(Boolean),
+        size: collectSizeLines(),
         used: document.getElementById('f-used').value.split('\n').map(s => s.trim()).filter(Boolean),
         extra: Object.keys(extra).length ? extra : undefined,
       },
