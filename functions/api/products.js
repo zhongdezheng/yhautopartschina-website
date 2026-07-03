@@ -36,7 +36,9 @@ export async function onRequest(context) {
         const id = body.id || slugify(body.title);
         const features = JSON.stringify(body.features || []);
         const marketFocus = JSON.stringify(body.marketFocus || []);
-        const details = body.details ? JSON.stringify(body.details) : null;
+        const detailsObj = body.details || {};
+        if (body.series && !detailsObj.series) detailsObj.series = body.series;
+        const details = JSON.stringify(detailsObj);
         await env.DB.prepare(
           `INSERT INTO products (id, title, category, compatible, features, image, market_focus, details)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -52,25 +54,16 @@ export async function onRequest(context) {
       case 'PUT': {
         const body = await request.json();
         const id = url.searchParams.get('id') || body.id;
-        if (!id) return new Response(JSON.stringify({ error: 'Missing id' }), { status: 400 });
+        if (!id) return new Response(JSON.stringify({ error: 'Missing id' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
         const existing = await env.DB.prepare('SELECT * FROM products WHERE id = ?').bind(id).first();
-        if (!existing) return new Response(JSON.stringify({ error: 'Not found' }), { status: 404 });
-        const title = body.title !== undefined ? String(body.title) : String(existing.title || '');
-        const category = body.category !== undefined ? String(body.category) : String(existing.category || '');
-        const compatible = body.compatible !== undefined ? String(body.compatible) : String(existing.compatible || '');
-        const features = body.features !== undefined ? JSON.stringify(body.features) : String(existing.features || '[]');
-        const image = body.image !== undefined ? String(body.image) : String(existing.image || '');
-        const marketFocus = body.marketFocus !== undefined ? JSON.stringify(body.marketFocus) : String(existing.market_focus || '[]');
-        let details = {};
-        if (existing.details) {
-          try { details = typeof existing.details === 'string' ? JSON.parse(existing.details) : existing.details; } catch(e) {}
-        }
-        if (body.series !== undefined) details.series = String(body.series);
-        if (body.details !== undefined) details = body.details;
-        const detailsStr = JSON.stringify(details);
+        if (!existing) return json({ error: 'Not found' }, 404);
+        const detObj = body.details || (existing.details ? JSON.parse(existing.details) : {});
+        if (body.series !== undefined && body.series !== null) detObj.series = body.series;
+        const features = JSON.stringify(body.features || JSON.parse(existing.features || '[]'));
+        const marketFocus = JSON.stringify(body.marketFocus || JSON.parse(existing.market_focus || '[]'));
         await env.DB.prepare(
           'UPDATE products SET title=?, category=?, compatible=?, features=?, image=?, market_focus=?, details=?, updated_at=datetime(?) WHERE id=?'
-        ).bind(title, category, compatible, features, image, marketFocus, detailsStr, 'now', id).run();
+        ).bind(body.title || existing.title, body.category || existing.category, body.compatible || existing.compatible, features, body.image || existing.image || '', marketFocus, JSON.stringify(detObj), 'now', id).run();
         const row = await env.DB.prepare('SELECT * FROM products WHERE id = ?').bind(id).first();
         return json(formatProduct(row));
       }
@@ -83,3 +76,40 @@ export async function onRequest(context) {
       }
 
       default:
+        return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+          status: 405,
+          headers: { 'Content-Type': 'application/json', Allow: 'GET,POST,PUT,DELETE' },
+        });
+    }
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+
+function slugify(text) {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+function formatProduct(row) {
+  return {
+    ...row,
+    features: safeParse(row.features),
+    market_focus: safeParse(row.market_focus),
+    details: row.details ? safeParse(row.details) : null,
+  };
+}
+
+function safeParse(str) {
+  try { return typeof str === 'string' ? JSON.parse(str) : (Array.isArray(str) ? str : []); }
+  catch { return []; }
+}
+
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*' },
+  });
+}
