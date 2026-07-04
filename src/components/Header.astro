@@ -4,8 +4,8 @@ import { products } from '../data/products';
 
 <header class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-crest-dark/90 border-b border-steel-800/50">
   <nav class="mx-auto max-w-7xl px-4 sm:px-6 py-2 sm:py-3" dir="ltr">
-    <!-- Top row: logo + languages -->
-    <div class="flex items-center justify-between">
+    <!-- Top row: logo + nav + lang -->
+    <div class="flex items-center justify-between gap-4">
       <a href="/" class="group flex items-center gap-3 flex-shrink-0">
         <div class="flex flex-col items-center leading-none">
           <span class="text-crest-gold text-xs tracking-[0.3em] font-medium uppercase">YH</span>
@@ -15,13 +15,28 @@ import { products } from '../data/products';
         <span data-i18n="nav.since" class="text-steel-400 text-[10px] sm:text-xs tracking-[0.2em] hidden sm:block">始于 2002</span>
       </a>
 
-      <div class="flex items-center gap-0.5 sm:gap-1">
-        <a href="?lang=zh" class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-medium tracking-wide text-steel-400 hover:text-steel-200 transition-colors">中文</a>
-        <a href="?lang=en" class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-medium tracking-wide text-steel-400 hover:text-steel-200 transition-colors">EN</a>
-        <a href="?lang=ru" class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-medium tracking-wide text-steel-400 hover:text-steel-200 transition-colors">Рус</a>
-        <a href="?lang=ar" class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-medium tracking-wide text-steel-400 hover:text-steel-200 transition-colors">العربية</a>
-        <a href="?lang=vi" class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-medium tracking-wide text-steel-400 hover:text-steel-200 transition-colors">Tiếng Việt</a>
-        <a href="?lang=th" class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-medium tracking-wide text-steel-400 hover:text-steel-200 transition-colors">ไทย</a>
+      <!-- Nav buttons -->
+      <div class="flex items-center gap-1 sm:gap-2">
+        <a href="/" class="px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-medium tracking-wide text-crest-gold border border-crest-gold/40 bg-crest-gold/5 hover:bg-crest-gold/10 transition-colors uppercase">主页</a>
+        <a href="/#products" class="px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-medium tracking-wide text-steel-400 border border-steel-700 hover:border-crest-gold/30 hover:text-steel-200 transition-colors uppercase">活塞</a>
+        <a href="/#products" class="px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-medium tracking-wide text-steel-400 border border-steel-700 hover:border-crest-gold/30 hover:text-steel-200 transition-colors uppercase">活塞环</a>
+      </div>
+
+      <!-- Language dropdown -->
+      <div class="relative" id="lang-dropdown">
+        <button id="lang-btn" class="flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 text-steel-400 border border-steel-700 hover:border-crest-gold/40 hover:text-steel-200 transition-colors text-[11px] sm:text-sm">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span id="lang-label">中文</span>
+          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div id="lang-panel" class="absolute right-0 top-full mt-1 z-30 bg-steel-900 border border-steel-700 overflow-hidden min-w-[120px] max-h-0 opacity-0 pointer-events-none transition-all duration-200" style="box-shadow: 0 8px 24px rgba(0,0,0,0.6);">
+          <a href="?lang=zh" data-lang="zh" class="block px-4 py-2 text-xs text-steel-300 hover:bg-steel-800 hover:text-crest-gold transition-colors border-b border-steel-800/30">中文</a>
+          <a href="?lang=en" data-lang="en" class="block px-4 py-2 text-xs text-steel-300 hover:bg-steel-800 hover:text-crest-gold transition-colors border-b border-steel-800/30">English</a>
+          <a href="?lang=ru" data-lang="ru" class="block px-4 py-2 text-xs text-steel-300 hover:bg-steel-800 hover:text-crest-gold transition-colors border-b border-steel-800/30">Русский</a>
+          <a href="?lang=ar" data-lang="ar" class="block px-4 py-2 text-xs text-steel-300 hover:bg-steel-800 hover:text-crest-gold transition-colors border-b border-steel-800/30">العربية</a>
+          <a href="?lang=vi" data-lang="vi" class="block px-4 py-2 text-xs text-steel-300 hover:bg-steel-800 hover:text-crest-gold transition-colors border-b border-steel-800/30">Tiếng Việt</a>
+          <a href="?lang=th" data-lang="th" class="block px-4 py-2 text-xs text-steel-300 hover:bg-steel-800 hover:text-crest-gold transition-colors">ไทย</a>
+        </div>
       </div>
     </div>
 
@@ -60,13 +75,38 @@ import { products } from '../data/products';
 </header>
 
 <script is:inline>
+  // Language dropdown
+  (function() {
+    var btn = document.getElementById('lang-btn');
+    var panel = document.getElementById('lang-panel');
+    var label = document.getElementById('lang-label');
+    var open = false;
+    
+    // Set current lang label
+    var p = new URLSearchParams(window.location.search);
+    var cur = p.get('lang') || 'zh';
+    var names = {zh:'中文',en:'English',ru:'Русский',ar:'العربية',vi:'Tiếng Việt',th:'ไทย'};
+    label.textContent = names[cur] || '中文';
+
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      open = !open;
+      panel.style.maxHeight = open ? '300px' : '0';
+      panel.style.opacity = open ? '1' : '0';
+      panel.style.pointerEvents = open ? 'auto' : 'none';
+    });
+    document.addEventListener('click', function() {
+      if (open) { open = false; panel.style.maxHeight='0'; panel.style.opacity='0'; panel.style.pointerEvents='none'; }
+    });
+  })();
+
+  // Product search
   (function () {
     const staticProducts = {
       {JSON.stringify(products.map(p => ({ id: p.id, title: p.title, category: p.category, compatible: p.compatible, features: p.features, image: p.image })))}
     };
     let allProducts = [...staticProducts];
 
-    // Fetch dynamic products from API
     fetch('/api/products').then(r => r.json()).then(data => {
       if (Array.isArray(data) && data.length) {
         allProducts = data;
@@ -92,11 +132,9 @@ import { products } from '../data/products';
     }
 
     function getMatchTerms(query) {
-      // Normalize: remove spaces, dashes, slashes for OEM-style matching
       const normalized = query.replace(/[-_\/\s]+/g, '').toLowerCase().trim();
       const original = query.toLowerCase().replace(/[-_\/]+/g, ' ').trim();
-      const terms = [...new Set([...original.split(/\s+/).filter(Boolean), normalized].filter(t => t.length >= 2))];
-      return terms;
+      return [...new Set([...original.split(/\s+/).filter(Boolean), normalized].filter(t => t.length >= 2))];
     }
 
     function highlightMatch(text, terms) {
@@ -112,37 +150,20 @@ import { products } from '../data/products';
     input.addEventListener('input', () => {
       clearTimeout(timer);
       const q = input.value.trim();
-      if (q.length < 2) {
-        hideResults();
-        clearBtn.style.display = 'none';
-        return;
-      }
+      if (q.length < 2) { hideResults(); clearBtn.style.display = 'none'; return; }
       clearBtn.style.display = 'flex';
-
       timer = setTimeout(() => {
         const terms = getMatchTerms(q);
         if (!terms.length) { hideResults(); return; }
-
         const matches = allProducts.map(p => {
-          // Build comprehensive search text including details
           const details = p.details || {};
-          const searchParts = [
-            p.title, p.compatible, p.category, p.id,
-            ...(p.features || []),
-            ...(details.oem || []),
-            ...(details.size || []),
-            ...(details.used || [])
-          ];
+          const searchParts = [p.title, p.compatible, p.category, p.id, ...(p.features || []), ...(details.oem || []), ...(details.size || []), ...(details.used || [])];
           const searchText = searchParts.filter(Boolean).join(' ').toLowerCase();
           const searchTextNoSpaces = searchText.replace(/[-_\s]+/g, '');
           const score = terms.reduce((s, t) => {
-            const tNoSpace = t.replace(/\s+/g, '');
-            // Exact OEM match (without spaces) = highest score
-            if (searchTextNoSpaces.includes(tNoSpace)) s += 8;
-            // Normal match
+            if (searchTextNoSpaces.includes(t.replace(/\s+/g, ''))) s += 8;
             if (searchText.includes(t)) s += 3;
-            const exactRe = new RegExp('\\b' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-            if (exactRe.test(searchText)) s += 5;
+            if (new RegExp('\\b' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i').test(searchText)) s += 5;
             return s;
           }, 0);
           return { ...p, score };
@@ -152,77 +173,26 @@ import { products } from '../data/products';
           showResults('<div class="px-4 py-6 text-center text-steel-500 text-xs">No products found for "' + q + '"</div>');
           return;
         }
-
         const html = matches.map(p => `
-          <a href="/#products" onclick="document.getElementById('search-input').value='${p.id.replace(/'/g, "\\'")}'"
-            class="flex items-start gap-3 px-3 sm:px-4 py-3 border-b border-steel-800/30 last:border-b-0
-                   hover:bg-gradient-to-r hover:from-crest-gold/5 hover:to-transparent transition-colors cursor-pointer group">
+          <a href="/#products" class="flex items-start gap-3 px-3 sm:px-4 py-3 border-b border-steel-800/30 last:border-b-0 hover:bg-gradient-to-r hover:from-crest-gold/5 hover:to-transparent transition-colors cursor-pointer group">
             <div class="flex-shrink-0 w-10 h-10 bg-steel-950 border border-steel-800/50 flex items-center justify-center overflow-hidden">
-              <span class="text-crest-gold text-[8px] tracking-wider font-bold uppercase">${p.category.slice(0, 3)}</span>
+              <span class="text-crest-gold text-[8px] tracking-wider font-bold uppercase">${p.category.slice(0,3)}</span>
             </div>
             <div class="flex-1 min-w-0">
-              <div class="text-steel-200 text-xs sm:text-sm font-medium group-hover:text-crest-gold transition-colors truncate">
-                ${highlightMatch(p.title, terms)}
-              </div>
-              <div class="text-steel-500 text-[10px] sm:text-xs mt-0.5 truncate">
-                ${highlightMatch(p.compatible, terms)}
-              </div>
+              <div class="text-steel-200 text-xs sm:text-sm font-medium group-hover:text-crest-gold transition-colors truncate">${highlightMatch(p.title, terms)}</div>
+              <div class="text-steel-500 text-[10px] sm:text-xs mt-0.5 truncate">${highlightMatch(p.compatible, terms)}</div>
             </div>
           </a>
         `).join('');
-
         showResults(html);
-
-        // Add click handlers to focus the product cards
-        results.querySelectorAll('a').forEach(a => {
-          a.addEventListener('click', function(e) {
-            const pid = this.querySelector('span').textContent?.toLowerCase();
-            hideResults();
-            // Scroll to products section
-            const section = document.getElementById('products');
-            if (section) {
-              section.scrollIntoView({ behavior: 'smooth' });
-              // Flash effect on matching card
-              setTimeout(() => {
-                const card = document.querySelector(`[data-product-id="${p.id}"]`) ||
-                  Array.from(document.querySelectorAll('.product-card')).find(c =>
-                    c.textContent?.toLowerCase().includes(pid || '')
-                  );
-                if (card) {
-                  card.style.transition = 'box-shadow 0.3s ease';
-                  card.style.boxShadow = '0 0 24px rgba(200,169,110,0.3)';
-                  setTimeout(() => { card.style.boxShadow = ''; }, 2000);
-                }
-              }, 400);
-            }
-          });
-        });
       }, 250);
     });
 
-    clearBtn.addEventListener('click', () => {
-      input.value = '';
-      input.focus();
-      hideResults();
-      clearBtn.style.display = 'none';
-    });
-
-    // Keyboard nav
+    clearBtn.addEventListener('click', () => { input.value = ''; input.focus(); hideResults(); clearBtn.style.display = 'none'; });
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        hideResults();
-        input.blur();
-        clearBtn.style.display = 'none';
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        input.focus();
-      }
+      if (e.key === 'Escape') { hideResults(); input.blur(); clearBtn.style.display = 'none'; }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); input.focus(); }
     });
-
-    // Close on outside click
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('#header-search')) hideResults();
-    });
+    document.addEventListener('click', function(e) { if (!e.target.closest('#header-search')) hideResults(); });
   })();
 </script>
