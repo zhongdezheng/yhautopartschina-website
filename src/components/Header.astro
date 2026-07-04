@@ -19,7 +19,7 @@ import { products } from '../data/products';
       <div class="flex items-center gap-1 sm:gap-2">
         <a href="/" class="px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-medium tracking-wide text-crest-gold border border-crest-gold/40 bg-crest-gold/5 hover:bg-crest-gold/10 transition-colors uppercase">主页</a>
         <a href="/#products" class="px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-medium tracking-wide text-steel-400 border border-steel-700 hover:border-crest-gold/30 hover:text-steel-200 transition-colors uppercase">活塞</a>
-        <a href="/#products" class="px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-medium tracking-wide text-steel-400 border border-steel-700 hover:border-crest-gold/30 hover:text-steel-200 transition-colors uppercase">活塞环</a>
+        <a href="/rings" class="px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-medium tracking-wide text-steel-400 border border-steel-700 hover:border-crest-gold/30 hover:text-steel-200 transition-colors uppercase">活塞环</a>
       </div>
 
       <!-- Language dropdown -->
@@ -107,7 +107,7 @@ import { products } from '../data/products';
     };
     let allProducts = [...staticProducts];
 
-    fetch('/api/products').then(r => r.json()).then(data => {
+    fetch('https://www.yhautopartschina.com/api/products').then(r => r.json()).then(data => {
       if (Array.isArray(data) && data.length) {
         allProducts = data;
       }
