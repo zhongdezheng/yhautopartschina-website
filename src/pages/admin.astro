@@ -1,5 +1,6 @@
 ---
 // 管理后台 /admin — YH 汽配产品管理系统
+const ADMIN_TOKEN = import.meta.env.ADMIN_TOKEN || 'yhadmin2024';
 ---
 <!doctype html>
 <html lang="zh">
@@ -9,79 +10,69 @@
   <meta name="robots" content="noindex" />
   <title>管理后台 — YH 汽配</title>
   <style is:inline>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'PingFang SC','Microsoft YaHei',system-ui,sans-serif; background:#0a0a10; color:#d0d0d8; min-height:100vh; }
-    .container { max-width:1200px; margin:0 auto; padding:32px 20px; }
-    h1 { font-size:2rem; font-weight:700; color:#c8a96e; margin-bottom:6px; }
-    h2 { font-size:1.4rem; font-weight:600; margin:24px 0 12px; color:#e0e0e8; }
-    .muted { font-size:0.9rem; color:#666; }
-
-    .login-box { max-width:420px; margin:100px auto; padding:40px; background:#111118; border:1px solid #2a2a38; text-align:center; }
-    .login-box input { width:100%; margin-top:16px; padding:14px 18px; background:#1a1a24; border:1px solid #333; color:#d0d0d8; font-size:1.1rem; outline:none; }
-    .login-box input:focus { border-color:#c8a96e; }
-
-    .btn { padding:10px 22px; font-size:1rem; border:1px solid #333; background:#1a1a24; color:#d0d0d8; cursor:pointer; transition:all .2s; }
-    .btn:hover { border-color:#c8a96e; color:#c8a96e; }
-    .btn-primary { background:#c8a96e; color:#0a0a10; border-color:#c8a96e; font-weight:600; font-size:1.05rem; padding:12px 28px; }
-    .btn-primary:hover { background:#b8985e; }
-    .btn-danger { border-color:#6a2a2a; color:#d47272; }
-    .btn-danger:hover { background:#2a1010; }
-    .btn-sm { padding:6px 14px; font-size:0.85rem; }
-    .btn-xs { padding:4px 10px; font-size:0.8rem; }
-
-    table { width:100%; border-collapse:collapse; font-size:1rem; }
-    th, td { padding:10px 12px; text-align:left; border-bottom:1px solid #1a1a28; }
-    th { color:#888; font-weight:500; font-size:0.85rem; letter-spacing:.05em; }
-    tr:hover td { background:rgba(200,169,110,.03); }
-    .img-td { width:64px; }
-    .img-td img, .img-td .no-img { width:52px; height:52px; object-fit:cover; background:#111; border:1px solid #222; display:flex; align-items:center; justify-content:center; color:#444; font-size:10px; }
-    .tag { display:inline-block; padding:3px 9px; font-size:0.8rem; border:1px solid #333; color:#888; margin:2px 3px; }
-    .tag.gold { border-color:#c8a96e40; color:#c8a96e; }
-    .title-cell { max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-
-    .toolbar { display:flex; gap:12px; align-items:center; margin:20px 0; flex-wrap:wrap; }
-    .toolbar input { padding:10px 16px; background:#1a1a24; border:1px solid #333; color:#d0d0d8; font-size:1rem; outline:none; min-width:240px; }
-    .toolbar input:focus { border-color:#c8a96e; }
-    .badge { display:inline-block; padding:3px 12px; background:#c8a96e20; color:#c8a96e; font-size:0.9rem; }
-
-    /* Modal */
-    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:100; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .2s; }
-    .modal-overlay.active { opacity:1; pointer-events:auto; }
-    .modal { background:#111118; border:1px solid #2a2a38; width:95%; max-width:780px; max-height:85vh; display:flex; flex-direction:column; overflow:hidden; }
-    .modal-header { padding:18px 24px; border-bottom:1px solid #1a1a28; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
-    .modal-header h3 { font-size:1.3rem; color:#c8a96e; margin:0; }
-    .modal-body { padding:20px 24px; overflow-y:auto; flex:1; min-height:0; }
-    .modal-footer { padding:14px 24px; border-top:1px solid #1a1a28; flex-shrink:0; display:flex; gap:10px; }
-
-    .field { margin-bottom:18px; }
-    .field label { display:block; font-size:1rem; color:#999; margin-bottom:6px; font-weight:500; }
-    .field input, .field textarea { width:100%; padding:12px 16px; background:#1a1a24; border:1px solid #333; color:#d0d0d8; font-size:1.05rem; outline:none; }
-    .field input:focus, .field textarea:focus { border-color:#c8a96e; }
-    .field textarea { min-height:70px; resize:vertical; }
-    .field-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-    .field-hint { font-size:0.8rem; color:#555; margin-top:4px; }
-
-    /* Image upload */
-    .img-upload-rows { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:10px; }
-    .img-upload-box { width:100px; height:100px; border:1px dashed #333; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:border-color .2s; position:relative; overflow:hidden; }
-    .img-upload-box:hover { border-color:#c8a96e; }
-    .img-upload-box img { width:100%; height:100%; object-fit:cover; }
-    .img-upload-box .del-img { position:absolute; top:2px; right:2px; background:rgba(0,0,0,.7); color:#d44; width:22px; height:22px; display:flex; align-items:center; justify-content:center; font-size:12px; cursor:pointer; display:none; }
-    .img-upload-box.has-img:hover .del-img { display:flex; }
-    .img-upload-box input[type=file] { display:none; }
-
-    /* Dynamic field rows */
-    .dynamic-row { display:flex; gap:10px; align-items:flex-end; margin-bottom:10px; }
-    .dynamic-row .field { flex:1; margin-bottom:0; }
-    .dynamic-row .field:first-child { max-width:160px; }
-    .dynamic-row .btn-remove { padding:10px 14px; font-size:0.85rem; color:#d47272; border-color:#6a2a2a; background:transparent; cursor:pointer; }
-    .add-row-btn { display:inline-flex; align-items:center; gap:6px; color:#c8a96e; cursor:pointer; font-size:0.95rem; padding:8px 0; transition:color .2s; background:none; border:none; }
-    .add-row-btn:hover { color:#d4b87e; }
-
-    .toast { position:fixed; top:20px; right:20px; z-index:200; padding:14px 24px; font-size:0.95rem; border:1px solid; opacity:0; transition:opacity .3s; pointer-events:none; }
-    .toast.show { opacity:1; }
-    .toast.success { background:#0a1a0a; border-color:#2a6a2a; color:#6ad46a; }
-    .toast.error { background:#1a0a0a; border-color:#6a2a2a; color:#d46a6a; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'PingFang SC','Microsoft YaHei',system-ui,sans-serif;background:#0a0a10;color:#d0d0d8;min-height:100vh}
+    .container{max-width:1200px;margin:0 auto;padding:32px 20px}
+    h1{font-size:2rem;font-weight:700;color:#c8a96e;margin-bottom:6px}
+    h2{font-size:1.4rem;font-weight:600;margin:24px 0 12px;color:#e0e0e8}
+    .muted{font-size:0.9rem;color:#666}
+    .login-box{max-width:420px;margin:100px auto;padding:40px;background:#111118;border:1px solid #2a2a38;text-align:center}
+    .login-box input{width:100%;margin-top:16px;padding:14px 18px;background:#1a1a24;border:1px solid #333;color:#d0d0d8;font-size:1.1rem;outline:none}
+    .login-box input:focus{border-color:#c8a96e}
+    .btn{padding:10px 22px;font-size:1rem;border:1px solid #333;background:#1a1a24;color:#d0d0d8;cursor:pointer;transition:all .2s}
+    .btn:hover{border-color:#c8a96e;color:#c8a96e}
+    .btn-primary{background:#c8a96e;color:#0a0a10;border-color:#c8a96e;font-weight:600;font-size:1.05rem;padding:12px 28px}
+    .btn-primary:hover{background:#b8985e}
+    .btn-danger{border-color:#6a2a2a;color:#d47272}
+    .btn-danger:hover{background:#2a1010}
+    .btn-sm{padding:6px 14px;font-size:0.85rem}
+    .btn-xs{padding:4px 10px;font-size:0.8rem}
+    .tab-nav{display:flex;gap:0;margin:20px 0;border-bottom:2px solid #1a1a28}
+    .tab-nav button{padding:10px 28px;font-size:1rem;font-weight:500;background:none;border:none;border-bottom:2px solid transparent;color:#888;cursor:pointer;transition:all .2s;margin-bottom:-2px}
+    .tab-nav button.active{color:#c8a96e;border-bottom-color:#c8a96e}
+    table{width:100%;border-collapse:collapse;font-size:1rem}
+    th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #1a1a28}
+    th{color:#888;font-weight:500;font-size:0.85rem;letter-spacing:.05em}
+    tr:hover td{background:rgba(200,169,110,.03)}
+    .img-td{width:64px}
+    .img-td img,.img-td .no-img{width:52px;height:52px;object-fit:cover;background:#111;border:1px solid #222;display:flex;align-items:center;justify-content:center;color:#444;font-size:10px}
+    .tag{display:inline-block;padding:3px 9px;font-size:0.8rem;border:1px solid #333;color:#888;margin:2px 3px}
+    .tag.gold{border-color:#c8a96e40;color:#c8a96e}
+    .tag.blue{border-color:#4a6aa640;color:#6aa6d4}
+    .title-cell{max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .toolbar{display:flex;gap:12px;align-items:center;margin:20px 0;flex-wrap:wrap}
+    .toolbar input{padding:10px 16px;background:#1a1a24;border:1px solid #333;color:#d0d0d8;font-size:1rem;outline:none;min-width:240px}
+    .toolbar input:focus{border-color:#c8a96e}
+    .badge{display:inline-block;padding:3px 12px;background:#c8a96e20;color:#c8a96e;font-size:0.9rem}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+    .modal-overlay.active{opacity:1;pointer-events:auto}
+    .modal{background:#111118;border:1px solid #2a2a38;width:95%;max-width:780px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden}
+    .modal-header{padding:18px 24px;border-bottom:1px solid #1a1a28;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+    .modal-header h3{font-size:1.3rem;color:#c8a96e;margin:0}
+    .modal-body{padding:20px 24px;overflow-y:auto;flex:1;min-height:0}
+    .modal-footer{padding:14px 24px;border-top:1px solid #1a1a28;flex-shrink:0;display:flex;gap:10px}
+    .field{margin-bottom:18px}
+    .field label{display:block;font-size:1rem;color:#999;margin-bottom:6px;font-weight:500}
+    .field input,.field textarea,.field select{width:100%;padding:12px 16px;background:#1a1a24;border:1px solid #333;color:#d0d0d8;font-size:1.05rem;outline:none}
+    .field input:focus,.field textarea:focus,.field select:focus{border-color:#c8a96e}
+    .field textarea{min-height:70px;resize:vertical}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .field-hint{font-size:0.8rem;color:#555;margin-top:4px}
+    .img-upload-rows{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px}
+    .img-upload-box{width:100px;height:100px;border:1px dashed #333;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .2s;position:relative;overflow:hidden}
+    .img-upload-box:hover{border-color:#c8a96e}
+    .img-upload-box img{width:100%;height:100%;object-fit:cover}
+    .img-upload-box .del-img{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.7);color:#d44;width:22px;height:22px;display:none;align-items:center;justify-content:center;font-size:12px;cursor:pointer}
+    .img-upload-box.has-img:hover .del-img{display:flex}
+    .img-upload-box input[type=file]{display:none}
+    .dynamic-row{display:flex;gap:10px;align-items:flex-end;margin-bottom:10px}
+    .dynamic-row .field{flex:1;margin-bottom:0}
+    .add-row-btn{display:inline-flex;align-items:center;gap:6px;color:#c8a96e;cursor:pointer;font-size:0.95rem;padding:8px 0;transition:color .2s;background:none;border:none}
+    .add-row-btn:hover{color:#d4b87e}
+    .toast{position:fixed;top:20px;right:20px;z-index:200;padding:14px 24px;font-size:0.95rem;border:1px solid;opacity:0;transition:opacity .3s;pointer-events:none}
+    .toast.show{opacity:1}
+    .toast.success{background:#0a1a0a;border-color:#2a6a2a;color:#6ad46a}
+    .toast.error{background:#1a0a0a;border-color:#6a2a2a;color:#d46a6a}
   </style>
 </head>
 <body>
@@ -97,7 +88,7 @@
   <div class="container">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px">
       <div>
-        <h1>YH 汽配管理</h1>
+        <h1>&#9879;&#65039; YH 汽配管理</h1>
         <p class="muted">产品管理 · <a href="/" style="color:#c8a96e;text-decoration:none">查看网站 →</a></p>
       </div>
       <div style="display:flex;gap:10px">
@@ -106,38 +97,29 @@
       </div>
     </div>
 
+    <!-- Category tabs -->
+    <div class="tab-nav">
+      <button class="active" data-tab="pistons" onclick="switchTab('pistons')">活塞</button>
+      <button data-tab="rings" onclick="switchTab('rings')">活塞环</button>
+    </div>
+
     <div class="toolbar">
       <input type="text" id="search-box" placeholder="搜索产品名称 / OEM / 车型..." oninput="renderTable()" />
-      <span class="badge">共 <strong id="product-count">0</strong> 件产品</span>
+      <span class="badge">共 <strong id="product-count">0</strong> 件</span>
     </div>
 
     <div style="overflow-x:auto">
       <table>
-        <thead><tr>
-          <th style="width:30px"><input type="checkbox" id="select-all" onchange="toggleSelectAll()" /></th>
-          <th>图片</th><th>产品名称</th><th>品类</th><th>OEM 数量</th><th>适用车型</th><th style="width:100px">操作</th>
-        </tr></thead>
-        <tbody id="product-list"><tr><td colspan="7" style="text-align:center;color:#555;padding:40px">正在加载产品...</td></tr></tbody>
+        <thead>
+          <tr><th style="width:40px">#</th><th>图片</th><th>产品名称</th><th>系列</th><th>品类</th><th>OEM数量</th><th style="width:120px">操作</th></tr>
+        </thead>
+        <tbody id="product-list"><tr><td colspan="7" style="text-align:center;color:#555;padding:40px">正在加载...</td></tr></tbody>
       </table>
     </div>
-
-    <div id="bulk-bar" style="display:none;margin-top:10px;padding:10px 16px;background:#1a0a0a;border:1px solid #3a1a1a;align-items:center;gap:10px">
-      <span id="bulk-count" style="font-size:0.9rem;color:#d47272">已选 0 件</span>
-      <button class="btn btn-danger btn-xs" onclick="bulkDelete()">批量删除</button>
-    </div>
-  </div>
-
-  <h2>已下架产品</h2>
-  <div style="overflow-x:auto">
-    <table>
-      <thead><tr><th>图片</th><th>产品名称</th><th>系列</th><th style="width:100px">操作</th></tr></thead>
-      <tbody id="archived-list"><tr><td colspan="4" style="text-align:center;color:#555;padding:20px">正在加载...</td></tr></tbody>
-    </table>
   </div>
 </div>
-</div>
 
-<!-- 产品编辑弹窗 -->
+<!-- Product Modal -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-header">
@@ -145,101 +127,381 @@
       <button style="background:none;border:none;color:#888;cursor:pointer;font-size:1.4rem" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body">
-      <form id="product-form" onsubmit="saveProduct(event)">
-        <!-- 1. 产品名称 -->
+      <form id="product-form" onsubmit="return false">
+        <!-- Category type selector -->
         <div class="field">
-          <label>产品名称 *</label>
-          <textarea id="f-title" required placeholder="第一行：主标题（如 Auto 3.0 T）&#10;第二行：描述（如 84.51mm 6 Cylinder Engine Piston...）&#10;第三行：副标题（可选）" rows="3"></textarea>
+          <label>产品类型 *</label>
+          <select id="f-type" onchange="onTypeChange()" style="width:100%;padding:12px 16px;background:#1a1a24;border:1px solid #333;color:#d0d0d8;font-size:1.05rem;outline:none">
+            <option value="活塞">活塞</option>
+            <option value="活塞环">活塞环</option>
+          </select>
         </div>
 
-        <!-- 2. 品类 -->
+        <!-- Title -->
         <div class="field">
-          <label>产品系列 *</label>
-          <select id="f-series" style="width:100%;padding:12px 16px;background:#1a1a24;border:1px solid #333;color:#d0d0d8;font-size:1.05rem;outline:none">
+          <label>产品名称 *</label>
+          <input type="text" id="f-title" required placeholder="例如：BMW B48/B58 活塞总成" />
+        </div>
+
+        <!-- Series (piston only) -->
+        <div class="field" id="field-series">
+          <label>系列 * <span class="field-hint" style="display:inline">(日系/德系/韩系/中国/其他)</span></label>
+          <select id="f-series" style="width:100%;padding:12px 16px;background:#1a1a24;border:1px solid #333;color:#d0d0d8;font-size:1.05rem;outline:none" onchange="onSeriesChange()">
             <option value="">请选择系列</option>
             <option value="德系">德系 (German)</option>
-            <option value="韩系">韩系 (Korean)</option>
             <option value="日系">日系 (Japanese)</option>
+            <option value="韩系">韩系 (Korean)</option>
             <option value="中国">中国 (Chinese)</option>
             <option value="other">其他（手动填写）</option>
           </select>
           <input type="text" id="f-series-other" placeholder="请输入其他系列名称" style="display:none;width:100%;margin-top:8px;padding:12px 16px;background:#1a1a24;border:1px solid #333;color:#d0d0d8;font-size:1.05rem;outline:none" />
         </div>
 
+        <!-- Category -->
         <div class="field">
           <label>品类 *</label>
-          <input type="text" id="f-category" required placeholder="例如：发动机活塞总成" list="category-list" />
-          <datalist id="category-list"></datalist>
+          <input type="text" id="f-category" required placeholder="例如：发动机活塞总成" />
         </div>
 
-        <!-- 3. 图片（多张） -->
+        <!-- Compatible -->
         <div class="field">
-          <label>产品图片（可上传多张，点击缩略图可删除）</label>
+          <label>适配车型 *</label>
+          <input type="text" id="f-compatible" required placeholder="例如：BMW 3系/5系/X1/X3 (B48/B58)" />
+        </div>
+
+        <!-- Image -->
+        <div class="field">
+          <label>产品图片</label>
           <div class="img-upload-rows" id="img-rows">
             <div class="img-upload-box" onclick="this.querySelector('input').click()">
               <span style="font-size:1.6rem;color:#555">+</span>
               <input type="file" accept="image/*" onchange="addImage(this)" />
             </div>
           </div>
-          <p class="field-hint">支持 JPG/PNG，单张最大 500KB。也可直接粘贴图片链接</p>
           <input type="text" id="f-image-urls" placeholder="或粘贴图片 URL，多个用逗号分隔" style="margin-top:8px" oninput="previewUrlImages()" />
         </div>
 
-        <!-- 4. OEM 号码 -->
+        <!-- OEM (piston ring primary, piston secondary) -->
         <div class="field">
-          <label>OEM 号码（一行一个，搜索时自动匹配）</label>
-          <textarea id="f-oem" placeholder="06E 107 065 DM&#10;06E 107 066 DM&#10;06E107065CA&#10;..." rows="5"></textarea>
+          <label>OEM 号码</label>
+          <textarea id="f-oem" placeholder="一行一个" rows="4"></textarea>
         </div>
 
-        <!-- 5. 尺寸参数 -->
-        <div class="field">
+        <!-- Size params -->
+        <div class="field" id="field-size">
           <label>尺寸参数</label>
           <div class="field-row" style="margin-bottom:10px">
             <div class="field"><label style="font-size:0.85rem;color:#c8a96e">Piston</label><input type="text" id="f-size-piston" placeholder="84.51mm" /></div>
             <div class="field"><label style="font-size:0.85rem;color:#c8a96e">Piston pin</label><input type="text" id="f-size-pin" placeholder="22 × 1.5mm" /></div>
           </div>
-          <div class="field" style="margin-bottom:0">
-            <label style="font-size:0.85rem;color:#c8a96e">Piston ring</label>
-            <input type="text" id="f-size-ring" placeholder="84.51 × 1.2 / 1.5 / 2.0mm" />
-          </div>
+          <div class="field"><label style="font-size:0.85rem;color:#c8a96e">Piston ring</label><input type="text" id="f-size-ring" placeholder="84.51 × 1.2/1.5/2.0mm" /></div>
           <div id="size-extra"></div>
-          <button type="button" class="add-row-btn" onclick="addSizeRow()" style="margin-top:8px">
-            <span style="font-size:1.2rem">＋</span> 添加其他尺寸参数
-          </button>
+          <button type="button" class="add-row-btn" onclick="addSizeRow()" style="margin-top:8px"><span>＋</span> 添加其他尺寸参数</button>
         </div>
 
-        <!-- 6. 适用车型 -->
+        <!-- Used for -->
         <div class="field">
-          <label>适用车型（一行一个，搜索时自动匹配）</label>
-          <textarea id="f-used" placeholder="3.0T CGEA/CGFA/CJTA → A4/S4: 2011–2015&#10;3.0T CCBA → A5: 2011–2017&#10;..." rows="6"></textarea>
+          <label>适用车型（详细）</label>
+          <textarea id="f-used" placeholder="一行一个" rows="5"></textarea>
         </div>
 
-        <!-- 7. 自定义参数 -->
+        <!-- Custom fields -->
         <div class="field">
-          <label>其他参数（可选，可添加多个）</label>
+          <label>其他参数</label>
           <div id="custom-fields"></div>
-          <button type="button" class="add-row-btn" onclick="addCustomField()">
-            <span style="font-size:1.2rem">＋</span> 添加自定义参数
-          </button>
+          <button type="button" class="add-row-btn" onclick="addCustomField()"><span>＋</span> 添加自定义参数</button>
         </div>
 
-        <!-- 8. 目标市场 -->
+        <!-- Market -->
         <div class="field">
           <label>目标市场</label>
-          <input type="text" id="f-markets" placeholder="中东, 东南亚, 非洲（逗号分隔）" />
+          <input type="text" id="f-markets" placeholder="中东, 东南亚, 非洲" />
         </div>
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-primary" id="btn-save" onclick="saveProduct()">保存产品</button>
-      <button type="button" class="btn" onclick="closeModal()">取消</button>
-      <button type="button" class="btn btn-danger" id="btn-delete" style="display:none;margin-left:auto" onclick="deleteProduct()">删除产品</button>
+      <button class="btn btn-primary" onclick="saveProduct()">保存产品</button>
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn btn-danger" id="btn-delete" style="display:none;margin-left:auto" onclick="deleteProduct()">删除产品</button>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script is:inline src="/admin.js"></script>
+<script is:inline>
+let token = localStorage.getItem('yh_admin_token');
+let products = [];
+let tab = 'pistons';
+let editingId = null;
+let sizeExtraCount = 0;
+let customFieldCount = 0;
+
+if (token) { showMain(); loadProducts(); }
+
+function login() {
+  token = document.getElementById('login-token').value.trim();
+  if (!token) return t('请输入管理令牌', 'error');
+  fetch('/api/products', { headers: { Authorization: 'Bearer ' + token } })
+    .then(r => { if (r.ok) { localStorage.setItem('yh_admin_token', token); showMain(); loadProducts(); } else t('令牌无效', 'error'); })
+    .catch(() => t('连接失败', 'error'));
+}
+
+function logout() {
+  localStorage.removeItem('yh_admin_token'); token = null;
+  document.getElementById('login-screen').style.display = 'block';
+  document.getElementById('main-screen').style.display = 'none';
+}
+
+function showMain() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-screen').style.display = 'block';
+}
+
+async function loadProducts() {
+  try {
+    const r = await fetch('/api/products');
+    const data = await r.json();
+    products = Array.isArray(data) ? data : [];
+    renderTable();
+  } catch(e) {
+    document.getElementById('product-list').innerHTML = '<tr><td colspan="7" style="text-align:center;color:#a44;padding:40px">加载失败</td></tr>';
+  }
+}
+
+function switchTab(t) {
+  tab = t;
+  document.querySelectorAll('.tab-nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
+  renderTable();
+}
+
+function getFiltered() {
+  const q = document.getElementById('search-box').value.toLowerCase().trim();
+  let list = tab === 'pistons' ? products.filter(p => p.category !== '活塞环') : products.filter(p => p.category === '活塞环');
+  if (q) list = list.filter(p => {
+    const d = p.details || {};
+    const txt = [p.title, p.category, p.compatible, p.id, ...(d.oem||[]), ...(d.size||[]), ...(d.used||[]), d.series || ''].join(' ').toLowerCase();
+    return txt.includes(q);
+  });
+  return list;
+}
+
+function renderTable() {
+  const list = getFiltered();
+  document.getElementById('product-count').textContent = list.length;
+  const tbody = document.getElementById('product-list');
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#555;padding:40px">暂无产品，点击「添加产品」开始</td></tr>'; return; }
+  tbody.innerHTML = list.map((p, i) => {
+    const d = p.details || {};
+    const img = p.image ? `<img src="${s(p.image)}" alt="" />` : '<div class="no-img">无图</div>';
+    const oemCount = (d.oem || []).length;
+    const series = d.series || '';
+    return `<tr>
+      <td>${i+1}</td>
+      <td class="img-td">${img}</td>
+      <td class="title-cell" title="${s(p.title)}">${s(p.title)}</td>
+      <td><span class="tag ${series?'gold':''}">${s(series)||'-'}</span></td>
+      <td><span class="tag blue">${s(p.category)}</span></td>
+      <td>${oemCount||'-'}</td>
+      <td>
+        <button class="btn btn-xs" onclick="editProduct('${s(p.id)}')">编辑</button>
+        <button class="btn btn-xs btn-danger" onclick="delProduct('${s(p.id)}')">删除</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function delProduct(id) {
+  if (!confirm('确认删除？')) return;
+  fetch('/api/products?id=' + id, { method:'DELETE', headers:{Authorization:'Bearer '+token} })
+    .then(r => { if(r.ok){ t('已删除','success'); loadProducts(); } else t('删除失败','error'); })
+    .catch(() => t('删除失败','error'));
+}
+
+function openModal(id) {
+  document.getElementById('modal').classList.add('active');
+  editingId = id || null;
+  document.getElementById('modal-title').textContent = id ? '编辑产品' : '添加产品';
+  document.getElementById('btn-delete').style.display = id ? 'inline-flex' : 'none';
+  resetForm();
+  if (id) {
+    const p = products.find(x => x.id === id);
+    if (p) {
+      const d = p.details || {};
+      document.getElementById('f-title').value = p.title || '';
+      document.getElementById('f-type').value = p.category === '活塞环' ? '活塞环' : '活塞';
+      document.getElementById('f-category').value = p.category || '';
+      document.getElementById('f-compatible').value = p.compatible || '';
+      document.getElementById('f-oem').value = (d.oem||[]).join('\n');
+      document.getElementById('f-used').value = (d.used||[]).join('\n');
+      document.getElementById('f-markets').value = (p.market_focus||[]).join(', ');
+      document.getElementById('f-image-urls').value = p.image || '';
+      previewUrlImages();
+      const ser = d.series || '';
+      if (['德系','日系','韩系','中国'].includes(ser)) document.getElementById('f-series').value = ser;
+      else if (ser) { document.getElementById('f-series').value = 'other'; document.getElementById('f-series-other').style.display='block'; document.getElementById('f-series-other').value = ser; }
+      if (d.size && d.size.length) {
+        d.size.forEach((s, i) => {
+          if (i === 0) document.getElementById('f-size-piston').value = s.replace(/^Piston[:\s]*/i,'');
+          else if (i === 1) document.getElementById('f-size-pin').value = s.replace(/^Piston pin[:\s]*/i,'');
+          else if (i === 2) document.getElementById('f-size-ring').value = s.replace(/^Piston ring[:\s]*/i,'');
+          else addSizeRow(s.replace(/^[^:]+:\s*/,''));
+        });
+      }
+      if (d.custom) {
+        d.custom.forEach(c => addCustomField(c.key, c.value));
+      }
+    }
+  }
+  onTypeChange();
+}
+
+function resetForm() {
+  ['f-title','f-category','f-compatible','f-oem','f-used','f-markets','f-image-urls'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-type').value = '活塞';
+  document.getElementById('f-series').value = '';
+  document.getElementById('f-series-other').style.display = 'none';
+  document.getElementById('f-series-other').value = '';
+  document.getElementById('f-size-piston').value = '';
+  document.getElementById('f-size-pin').value = '';
+  document.getElementById('f-size-ring').value = '';
+  document.getElementById('size-extra').innerHTML = '';
+  document.getElementById('custom-fields').innerHTML = '';
+  sizeExtraCount = 0;
+  customFieldCount = 0;
+  imgUrls = [];
+  document.getElementById('img-rows').innerHTML = '<div class="img-upload-box" onclick="this.querySelector(\'input\').click()"><span style="font-size:1.6rem;color:#555">+</span><input type="file" accept="image/*" onchange="addImage(this)" /></div>';
+}
+
+function onTypeChange() {
+  const type = document.getElementById('f-type').value;
+  const isRing = type === '活塞环';
+  document.getElementById('field-series').style.display = isRing ? 'none' : 'block';
+  document.getElementById('field-size').style.display = isRing ? 'block' : 'block';
+  document.getElementById('f-category').value = type;
+  if (!editingId) {
+    if (isRing) document.getElementById('f-category').value = '活塞环';
+    else document.getElementById('f-category').value = '';
+  }
+}
+
+function onSeriesChange() {
+  document.getElementById('f-series-other').style.display = document.getElementById('f-series').value === 'other' ? 'block' : 'none';
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('active'); }
+
+function addSizeRow(label, val) {
+  sizeExtraCount++;
+  const div = document.getElementById('size-extra');
+  const row = document.createElement('div');
+  row.className = 'field-row';
+  row.style.marginBottom = '10px';
+  row.innerHTML = `<div class="field"><input type="text" placeholder="参数名" value="${s(label||'')}" /></div><div class="field"><input type="text" placeholder="参数值" value="${s(val||'')}" /></div>`;
+  div.appendChild(row);
+}
+
+function addCustomField(key, val) {
+  customFieldCount++;
+  const div = document.getElementById('custom-fields');
+  const row = document.createElement('div');
+  row.className = 'field-row';
+  row.style.marginBottom = '10px';
+  row.innerHTML = `<div class="field"><input type="text" placeholder="参数名" value="${s(key||'')}" /></div><div class="field"><input type="text" placeholder="参数值" value="${s(val||'')}" /></div>`;
+  div.appendChild(row);
+}
+
+let imgUrls = [];
+function addImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    imgUrls.push(e.target.result);
+    renderImgBoxes();
+  };
+  reader.readAsDataURL(file);
+}
+function previewUrlImages() {
+  const val = document.getElementById('f-image-urls').value.trim();
+  if (!val) { imgUrls = []; renderImgBoxes(); return; }
+  imgUrls = val.split(',').map(u => u.trim()).filter(Boolean);
+  renderImgBoxes();
+}
+function renderImgBoxes() {
+  const container = document.getElementById('img-rows');
+  container.innerHTML = imgUrls.map((u, i) =>
+    `<div class="img-upload-box has-img"><img src="${u}" /><span class="del-img" onclick="removeImg(${i})">×</span></div>`
+  ).join('') + '<div class="img-upload-box" onclick="this.querySelector(\'input\').click()"><span style="font-size:1.6rem;color:#555">+</span><input type="file" accept="image/*" onchange="addImage(this)" /></div>';
+}
+function removeImg(i) { imgUrls.splice(i, 1); renderImgBoxes(); }
+
+async function saveProduct() {
+  const title = document.getElementById('f-title').value.trim();
+  const category = document.getElementById('f-category').value.trim();
+  const compatible = document.getElementById('f-compatible').value.trim();
+  if (!title || !category || !compatible) { t('请填写产品名称、品类和适配车型','error'); return; }
+
+  const isRing = document.getElementById('f-type').value === '活塞环';
+  const seriesVal = document.getElementById('f-series').value;
+  const series = isRing ? '' : (seriesVal === 'other' ? document.getElementById('f-series-other').value.trim() : seriesVal);
+
+  const oem = document.getElementById('f-oem').value.split('\n').map(s => s.trim()).filter(Boolean);
+  const used = document.getElementById('f-used').value.split('\n').map(s => s.trim()).filter(Boolean);
+  const markets = document.getElementById('f-markets').value.split(',').map(s => s.trim()).filter(Boolean);
+
+  const size = [];
+  const piston = document.getElementById('f-size-piston').value.trim();
+  const pin = document.getElementById('f-size-pin').value.trim();
+  const ring = document.getElementById('f-size-ring').value.trim();
+  if (piston) size.push('Piston: ' + piston);
+  if (pin) size.push('Piston pin: ' + pin);
+  if (ring) size.push('Piston ring: ' + ring);
+  document.querySelectorAll('#size-extra .field-row').forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const k = inputs[0].value.trim(), v = inputs[1].value.trim();
+    if (k && v) size.push(k + ': ' + v);
+  });
+
+  const custom = [];
+  document.querySelectorAll('#custom-fields .field-row').forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const k = inputs[0].value.trim(), v = inputs[1].value.trim();
+    if (k && v) custom.push({ key: k, value: v });
+  });
+
+  const id = editingId || title.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
+  const body = { id, title, category, compatible, features: [], image: imgUrls[0] || document.getElementById('f-image-urls').value.trim(), marketFocus: markets, details: { oem, size, used, series, custom } };
+
+  try {
+    const method = editingId ? 'PUT' : 'POST';
+    const url = editingId ? '/api/products?id=' + editingId : '/api/products';
+    const r = await fetch(url, { method, headers: { 'Content-Type':'application/json', Authorization:'Bearer '+token }, body: JSON.stringify(body) });
+    if (!r.ok) throw new Error('保存失败');
+    t(editingId ? '已更新' : '已添加', 'success');
+    closeModal();
+    loadProducts();
+  } catch(e) { t(e.message, 'error'); }
+}
+
+function editProduct(id) { openModal(id); }
+async function deleteProduct() {
+  if (!confirm('确认删除？')) return;
+  try {
+    const r = await fetch('/api/products?id=' + editingId, { method:'DELETE', headers:{Authorization:'Bearer '+token} });
+    if (!r.ok) throw new Error('失败');
+    t('已删除','success');
+    closeModal();
+    loadProducts();
+  } catch(e) { t(e.message,'error'); }
+}
+
+function t(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'toast ' + type + ' show';
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+function s(str) { const d = document.createElement('div'); d.textContent = str||''; return d.innerHTML; }
+</script>
 </body>
 </html>
