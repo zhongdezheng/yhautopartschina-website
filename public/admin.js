@@ -3,7 +3,6 @@ let token = localStorage.getItem('yh_admin_token');
   let editingId = null;
   let customFieldCount = 0;
   let sizeExtraCount = 0;
-  let currentProductType = 'piston';
 
   if (token) { showMain(); loadProducts(); }
   else { document.getElementById('login-screen').style.display = 'block'; }
@@ -69,15 +68,13 @@ let token = localStorage.getItem('yh_admin_token');
     tbody.innerHTML = filtered.map(p => {
       const d = p.details || {};
       const imgs = (p.image||'').split(',').filter(Boolean);
-      const isRing = p.category === 'Piston Ring';
-      const specsInfo = d.specs ? d.specs.map(sp => sp.ring+':'+sp.hxr).join(' ') : '';
       return `<tr>
         <td><input type="checkbox" class="row-check" data-id="${p.id}" onchange="updateBulkBar()" /></td>
         <td class="img-td">${imgs[0] ? `<img src="${imgs[0]}" alt="" onerror="this.parentElement.innerHTML='<div class=no-img>!</div>'" />` : '<div class="no-img">无图</div>'}</td>
         <td class="title-cell"><strong style="color:#e0e0e8;font-size:0.95rem">${s(p.title).replace(/\n/g,'<br>')}</strong></td>
         <td><span class="tag gold">${s(p.category)}</span></td>
         <td style="font-size:0.85rem;color:#888">${(d.oem||[]).length} 个</td>
-        <td style="font-size:0.8rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${specsInfo || s(p.compatible)}</td>
+        <td style="font-size:0.8rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s(p.compatible)}</td>
         <td><button class="btn btn-sm" onclick="editProduct('${p.id}')">编辑</button></td>
       </tr>`;
     }).join('');
@@ -105,37 +102,6 @@ let token = localStorage.getItem('yh_admin_token');
     t(`已删除 ${n} 件产品`, 'success'); loadProducts();
   }
 
-  // ========== Product Type Switch ==========
-  function switchProductType(type) {
-    currentProductType = type;
-    const pistonLabel = document.getElementById('type-piston-label');
-    const ringLabel = document.getElementById('type-ring-label');
-    if (type === 'ring') {
-      ringLabel.style.borderColor = '#c8a96e';
-      ringLabel.style.color = '#c8a96e';
-      ringLabel.style.background = 'rgba(200,169,110,0.1)';
-      pistonLabel.style.borderColor = '#333';
-      pistonLabel.style.color = '#999';
-      pistonLabel.style.background = 'transparent';
-      document.getElementById('piston-fields').style.display = 'none';
-      document.getElementById('ring-fields').style.display = 'block';
-      document.getElementById('piston-detail-fields').style.display = 'none';
-    } else {
-      pistonLabel.style.borderColor = '#c8a96e';
-      pistonLabel.style.color = '#c8a96e';
-      pistonLabel.style.background = 'rgba(200,169,110,0.1)';
-      ringLabel.style.borderColor = '#333';
-      ringLabel.style.color = '#999';
-      ringLabel.style.background = 'transparent';
-      document.getElementById('piston-fields').style.display = 'block';
-      document.getElementById('ring-fields').style.display = 'none';
-      document.getElementById('piston-detail-fields').style.display = 'block';
-    }
-  }
-
-  // Initialize type switch on load
-  switchProductType('piston');
-
   // ========== 弹窗 ==========
   let tempImages = [];
 
@@ -144,113 +110,54 @@ let token = localStorage.getItem('yh_admin_token');
     editingId = id || null;
     tempImages = [];
     customFieldCount = 0;
-    sizeExtraCount = 0;
     document.getElementById('modal-title').textContent = id ? '编辑产品' : '添加产品';
     document.getElementById('btn-delete').style.display = id ? 'inline-block' : 'none';
     document.getElementById('custom-fields').innerHTML = '';
-    document.getElementById('size-extra').innerHTML = '';
-
-    // Reset all piston fields
-    ['f-title','f-category','f-oem','f-used','f-markets','f-image-urls'].forEach(fid => {
-      const el = document.getElementById(fid);
-      if (el) el.value = '';
-    });
+    ['f-title','f-category','f-oem','f-used','f-markets','f-image-urls'].forEach(fid => document.getElementById(fid).value = '');
     document.getElementById('f-series').value = '';
     document.getElementById('f-series-other').style.display = 'none';
     document.getElementById('f-series-other').value = '';
     document.getElementById('f-size-piston').value = '';
     document.getElementById('f-size-pin').value = '';
     document.getElementById('f-size-ring').value = '';
-
-    // Reset ring fields
-    document.getElementById('f-ring-model').value = '';
-    document.getElementById('f-ring-bore').value = '';
-    document.getElementById('f-ring-hxr-1st').value = '';
-    document.getElementById('f-ring-hxr-2nd').value = '';
-    document.getElementById('f-ring-hxr-oil').value = '';
-    document.getElementById('f-ring-cylinders').value = '';
-    document.getElementById('f-ring-spec').value = '';
-    document.getElementById('f-ring-compatible').value = '';
-    document.getElementById('f-ring-notes').value = '';
-
+    document.getElementById('size-extra').innerHTML = '';
+    sizeExtraCount = 0;
     resetImageRows();
 
     if (id) {
       const p = products.find(x => x.id === id);
       if (p) {
-        const isRing = p.category === 'Piston Ring';
-
-        // Set product type
-        if (isRing) {
-          document.querySelector('input[name="product-type"][value="ring"]').checked = true;
-          switchProductType('ring');
-        } else {
-          document.querySelector('input[name="product-type"][value="piston"]').checked = true;
-          switchProductType('piston');
-        }
-
         document.getElementById('f-title').value = p.title || '';
-
-        if (isRing) {
-          // Fill ring fields from details
-          const d = p.details || {};
-          const sizeLines = d.size || [];
-          const usedModels = d.used || [];
-          document.getElementById('f-ring-model').value = usedModels[0] || '';
-          // Parse bore from size
-          sizeLines.forEach(line => {
-            if (line.startsWith('Bore:')) {
-              document.getElementById('f-ring-bore').value = line.replace('Bore:', '').replace('mm', '').trim();
-            } else if (line.startsWith('Cylinders:')) {
-              document.getElementById('f-ring-cylinders').value = line.replace('Cylinders:', '').trim();
-            } else if (!line.startsWith('Bore:') && !line.startsWith('Cylinders:')) {
-              document.getElementById('f-ring-spec').value = line.trim();
-            }
-          });
-          // Fill specs
-          const specs = d.specs || [];
-          if (specs[0]) document.getElementById('f-ring-hxr-1st').value = specs[0].hxr || '';
-          if (specs[1]) document.getElementById('f-ring-hxr-2nd').value = specs[1].hxr || '';
-          if (specs[2]) document.getElementById('f-ring-hxr-oil').value = specs[2].hxr || '';
-          document.getElementById('f-ring-compatible').value = (p.compatible || '').replace('适配: ', '');
-          document.getElementById('f-ring-notes').value = (d.oem || []).join(', ');
-        } else {
-          document.getElementById('f-category').value = p.category || '';
-          var ser = p.series || '';
-          if (['德系','韩系','日系','中国'].includes(ser)) { document.getElementById('f-series').value = ser; }
-          else if (ser) { document.getElementById('f-series').value = 'other'; document.getElementById('f-series-other').style.display='block'; document.getElementById('f-series-other').value = ser; }
-
-          const d = p.details || {};
-          document.getElementById('f-oem').value = (d.oem||[]).join('\n');
-          const sizeLines = d.size || [];
-          sizeLines.forEach(line => {
-            const m = line.match(/^(.+?):\s*(.*)$/) || line.match(/^(.+?)\s+(.+)$/);
-            if (m) {
-              const key = m[1].trim();
-              const val = m[2].trim();
-              if (/piston$/i.test(key.replace(/\s+/g,''))) { document.getElementById('f-size-piston').value = val; }
-              else if (/pin$/i.test(key.replace(/\s+/g,''))) { document.getElementById('f-size-pin').value = val; }
-              else if (/ring$/i.test(key.replace(/\s+/g,''))) { document.getElementById('f-size-ring').value = val; }
-              else { addSizeRow(key, val); }
-            } else if (line.trim()) {
-              addSizeRow('', line.trim());
-            }
-          });
-          document.getElementById('f-used').value = (d.used||[]).join('\n');
-          const extra = d.extra || {};
-          Object.entries(extra).forEach(([k,v]) => addCustomField(k, v));
-        }
-
-        document.getElementById('f-markets').value = (p.market_focus||p.marketFocus||[]).join(', ');
-
+        document.getElementById('f-category').value = p.category || '';
+        var ser = p.series || '';
+        if (['德系','韩系','日系','中国'].includes(ser)) { document.getElementById('f-series').value = ser; }
+        else if (ser) { document.getElementById('f-series').value = 'other'; document.getElementById('f-series-other').style.display='block'; document.getElementById('f-series-other').value = ser; }
+        document.getElementById('f-markets').value = (p.market_focus||[]).join(', ');
+        const d = p.details || {};
+        document.getElementById('f-oem').value = (d.oem||[]).join('\n');
+        // Parse size lines
+        const sizeLines = d.size || [];
+        sizeLines.forEach(line => {
+          const m = line.match(/^(.+?):\s*(.*)$/) || line.match(/^(.+?)\s+(.+)$/);
+          if (m) {
+            const key = m[1].trim();
+            const val = m[2].trim();
+            if (/piston$/i.test(key.replace(/\s+/g,''))) { document.getElementById('f-size-piston').value = val; }
+            else if (/pin$/i.test(key.replace(/\s+/g,''))) { document.getElementById('f-size-pin').value = val; }
+            else if (/ring$/i.test(key.replace(/\s+/g,''))) { document.getElementById('f-size-ring').value = val; }
+            else { addSizeRow(key, val); }
+          } else if (line.trim()) {
+            addSizeRow('', line.trim());
+          }
+        });
+        document.getElementById('f-used').value = (d.used||[]).join('\n');
         // Load images
         const imgs = (p.image||'').split(',').filter(Boolean);
         imgs.forEach(img => addImageBox(img));
+        // Custom fields
+        const extra = d.extra || {};
+        Object.entries(extra).forEach(([k,v]) => addCustomField(k, v));
       }
-    } else {
-      // New product: default to piston
-      document.querySelector('input[name="product-type"][value="piston"]').checked = true;
-      switchProductType('piston');
     }
     document.getElementById('modal').classList.add('active');
   }
@@ -292,9 +199,11 @@ let token = localStorage.getItem('yh_admin_token');
     tempImages = tempImages.filter(s => s !== src);
   }
 
-  function previewUrlImages() {}
+  function previewUrlImages() {
+    // Handled via f-image-urls text input
+  }
 
-  // Custom fields for piston
+  // Custom fields
   document.getElementById('f-series').addEventListener('change', function() {
     var o = document.getElementById('f-series-other');
     o.style.display = this.value === 'other' ? 'block' : 'none';
@@ -327,73 +236,6 @@ let token = localStorage.getItem('yh_admin_token');
   }
 
   async function saveProduct() {
-    const type = currentProductType;
-
-    if (type === 'ring') {
-      // Save piston ring
-      const model = document.getElementById('f-ring-model').value.trim();
-      const bore = document.getElementById('f-ring-bore').value.trim();
-      const hxr1st = document.getElementById('f-ring-hxr-1st').value.trim();
-      const hxr2nd = document.getElementById('f-ring-hxr-2nd').value.trim();
-      const hxrOil = document.getElementById('f-ring-hxr-oil').value.trim();
-      const cylinders = document.getElementById('f-ring-cylinders').value.trim();
-      const spec = document.getElementById('f-ring-spec').value.trim();
-      const compatible = document.getElementById('f-ring-compatible').value.trim();
-      const notes = document.getElementById('f-ring-notes').value.trim();
-
-      if (!model) { t('请输入车型', 'error'); return; }
-      if (!bore) { t('请输入缸径', 'error'); return; }
-
-      const urlImgs = document.getElementById('f-image-urls').value.split(',').map(s => s.trim()).filter(Boolean);
-      const allImgs = [...tempImages, ...urlImgs];
-
-      const title = document.getElementById('f-title').value.trim() || `${model} ${bore}mm Piston Ring Set`;
-
-      // Generate a slug-like id
-      let prodId = editingId;
-      if (!editingId) {
-        prodId = 'ring-' + Date.now();
-      }
-
-      const data = {
-        id: prodId,
-        title: title,
-        category: 'Piston Ring',
-        compatible: compatible ? `适配: ${compatible}` : '',
-        features: [],
-        image: allImgs.join(','),
-        marketFocus: document.getElementById('f-markets').value.split(',').map(s => s.trim()).filter(Boolean),
-        details: {
-          oem: notes ? notes.split(/[,，]/).map(s => s.trim()).filter(Boolean) : [],
-          size: [
-            `Bore: ${bore}mm`,
-            `Cylinders: ${cylinders}`,
-            spec,
-          ].filter(Boolean),
-          used: [model],
-          specs: [
-            { ring: '1ST', hxr: hxr1st },
-            { ring: '2ND', hxr: hxr2nd },
-            { ring: 'OIL', hxr: hxrOil },
-          ],
-        },
-      };
-
-      const url = editingId ? `/api/products?id=${editingId}` : '/api/products';
-      try {
-        const r = await fetch(url, {
-          method: editingId ? 'PUT' : 'POST',
-          headers: { 'Content-Type':'application/json', Authorization:'Bearer '+token },
-          body: JSON.stringify(data),
-        });
-        if (!r.ok) throw new Error((await r.json()).error || '保存失败');
-        t(editingId ? '产品已更新' : '产品已添加', 'success');
-        closeModal(); loadProducts();
-      } catch(err) { t(err.message, 'error'); }
-      return;
-    }
-
-    // Save piston (original logic)
     function collectSizeLines() {
       const lines = [];
       const pv = document.getElementById('f-size-piston').value.trim();
@@ -409,17 +251,16 @@ let token = localStorage.getItem('yh_admin_token');
       });
       return lines;
     }
-
+    // Collect images
     const urlImgs = document.getElementById('f-image-urls').value.split(',').map(s => s.trim()).filter(Boolean);
     const allImgs = [...tempImages, ...urlImgs];
-
+    // Collect custom fields
     const extra = {};
     document.querySelectorAll('[data-cf-key]').forEach(el => {
       const k = el.value.trim();
       const v = el.parentElement.parentElement.querySelector('[data-cf-val]')?.value?.trim();
       if (k) extra[k] = v || '';
     });
-
     const data = {
       series: (function(){var s=document.getElementById('f-series').value;return s==='other'?document.getElementById('f-series-other').value.trim():s;})(),
       title: document.getElementById('f-title').value.trim(),
@@ -449,6 +290,7 @@ let token = localStorage.getItem('yh_admin_token');
     } catch(err) { t(err.message, 'error'); }
   }
 
+
   async function loadArchived() {
     try {
       const r = await fetch('/api/products?status=archived');
@@ -458,7 +300,7 @@ let token = localStorage.getItem('yh_admin_token');
         : data.map(p => `<tr>
           <td class="img-td">${(p.image||'').split(',')[0] ? '<img src="'+(p.image||'').split(',')[0]+'" />' : '<div class="no-img">无图</div>'}</td>
           <td><strong style="color:#e0e0e8">${s(p.title)}</strong></td>
-          <td><span class="tag gold">${s(p.series||p.category||'')}</span></td>
+          <td><span class="tag gold">${s(p.series||'')}</span></td>
           <td><button class="btn btn-sm" onclick="restoreProduct('${p.id}')">重新上架</button></td>
         </tr>`).join('');
     } catch {
@@ -494,6 +336,7 @@ let token = localStorage.getItem('yh_admin_token');
 
   function s(str) { const d = document.createElement('div'); d.textContent = str||''; return d.innerHTML; }
 
+  // Modal can only be closed via Cancel or ✕ button
   document.getElementById('select-all').addEventListener('change', function() {
     document.querySelectorAll('.row-check').forEach(cb => { cb.checked = this.checked; });
     updateBulkBar();

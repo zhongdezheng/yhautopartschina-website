@@ -1,0 +1,122 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import ProductCard from '../components/ProductCard.astro';
+import ContactBar from '../components/ContactBar.astro';
+import InquiryForm from '../components/InquiryForm.astro';
+import { pistonRings } from '../data/products';
+---
+
+<Layout title="活塞环 — YH AUTO PARTS" description="Browse our complete piston ring catalog for SEA, Middle East & Africa markets.">
+  <Header />
+  <ContactBar />
+
+  <main class="pt-28 md:pt-32">
+    <!-- Piston Rings Page Hero -->
+    <section class="px-4 sm:px-6 py-12 md:py-16">
+      <div class="mx-auto max-w-7xl text-center">
+        <span class="text-crest-gold text-[10px] sm:text-xs tracking-[0.3em] uppercase mb-2 inline-block">Piston Rings</span>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-display font-black text-steel-50">全部活塞环产品</h1>
+        <div class="flex flex-col items-center gap-0.5 mt-4">
+          <span class="block w-10 h-px bg-crest-gold/50"></span>
+          <span class="block w-6 h-px bg-crest-gold/20"></span>
+        </div>
+        <p class="text-steel-400 text-sm mt-6 max-w-xl mx-auto">233款发动机型号全覆盖。从微型车到豪华品牌，从柴油到汽油，一应俱全。支持批发与混批。</p>
+      </div>
+    </section>
+
+    <!-- Piston Rings Grid -->
+    <section class="px-4 sm:px-6 py-8 md:py-12 bg-steel-950/30">
+      <div class="mx-auto max-w-7xl">
+        <!-- Quick filter by bore size -->
+        <div class="flex flex-wrap gap-2 mb-8 justify-center" id="ring-filters">
+          <button class="ring-filter-btn px-3 py-1.5 text-xs border border-steel-700 text-steel-400 hover:border-crest-gold/40 hover:text-crest-gold transition-colors bg-crest-gold/10 border-crest-gold/40 text-crest-gold" data-bore="all">全部</button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-8" id="rings-grid">
+          {pistonRings.map((product, i) => (
+            <ProductCard product={product} index={i} />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <InquiryForm />
+
+    <footer class="px-4 sm:px-6 py-12 md:py-16 text-center">
+      <div class="flex flex-col items-center gap-3">
+        <div class="flex flex-col items-center leading-none">
+          <span class="text-crest-gold text-sm tracking-[0.3em] font-medium uppercase">YH</span>
+          <span class="text-steel-500 text-[10px] tracking-[0.5em] uppercase">AUTO PARTS</span>
+        </div>
+        <span class="block w-8 h-px bg-crest-gold/30"></span>
+        <p class="text-steel-600 text-xs tracking-wider">广州 · 中国</p>
+        <p class="text-steel-700 text-[10px] tracking-wider">活塞及活塞环专家 · 服务东南亚、中东及非洲市场</p>
+      </div>
+    </footer>
+  </main>
+</Layout>
+
+<script is:inline>
+  // Bore size filter
+  (function() {
+    const grid = document.getElementById('rings-grid');
+    const cards = grid.querySelectorAll('.product-card');
+    
+    // Extract bore sizes and build filter buttons
+    const boreRanges = new Set();
+    cards.forEach(card => {
+      const sizeSection = card.querySelector('[data-expand="size"]');
+      if (sizeSection) {
+        const text = sizeSection.textContent;
+        const match = text.match(/缸径:\s*([\d.]+)/);
+        if (match) {
+          const bore = parseFloat(match[1]);
+          if (bore < 70) boreRanges.add('<70mm');
+          else if (bore < 80) boreRanges.add('70-79mm');
+          else if (bore < 90) boreRanges.add('80-89mm');
+          else boreRanges.add('≥90mm');
+        }
+      }
+    });
+
+    const filterContainer = document.getElementById('ring-filters');
+    const sortedRanges = ['<70mm', '70-79mm', '80-89mm', '≥90mm'].filter(r => boreRanges.has(r));
+    sortedRanges.forEach(range => {
+      const btn = document.createElement('button');
+      btn.className = 'ring-filter-btn px-3 py-1.5 text-xs border border-steel-700 text-steel-400 hover:border-crest-gold/40 hover:text-crest-gold transition-colors';
+      btn.dataset.bore = range;
+      btn.textContent = range;
+      filterContainer.appendChild(btn);
+    });
+
+    // Filter logic
+    filterContainer.addEventListener('click', function(e) {
+      const btn = e.target.closest('.ring-filter-btn');
+      if (!btn) return;
+
+      // Update active state
+      filterContainer.querySelectorAll('.ring-filter-btn').forEach(b => {
+        b.className = 'ring-filter-btn px-3 py-1.5 text-xs border border-steel-700 text-steel-400 hover:border-crest-gold/40 hover:text-crest-gold transition-colors';
+      });
+      btn.className = 'ring-filter-btn px-3 py-1.5 text-xs border border-crest-gold/40 text-crest-gold transition-colors bg-crest-gold/10';
+
+      const range = btn.dataset.bore;
+      cards.forEach(card => {
+        const sizeSection = card.querySelector('[data-expand="size"]');
+        if (range === 'all') { card.style.display = ''; return; }
+        if (!sizeSection) { card.style.display = 'none'; return; }
+        const text = sizeSection.textContent;
+        const match = text.match(/缸径:\s*([\d.]+)/);
+        if (!match) { card.style.display = 'none'; return; }
+        const bore = parseFloat(match[1]);
+        let show = false;
+        if (range === '<70mm') show = bore < 70;
+        else if (range === '70-79mm') show = bore >= 70 && bore < 80;
+        else if (range === '80-89mm') show = bore >= 80 && bore < 90;
+        else if (range === '≥90mm') show = bore >= 90;
+        card.style.display = show ? '' : 'none';
+      });
+    });
+  })();
+</script>

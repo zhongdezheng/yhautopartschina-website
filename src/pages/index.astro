@@ -6,7 +6,10 @@ import ProductCard from '../components/ProductCard.astro';
 import ThreeViewer from '../components/ThreeViewer.astro';
 import InquiryForm from '../components/InquiryForm.astro';
 import ContactBar from '../components/ContactBar.astro';
-import { products, siteConfig } from '../data/products';
+import { pistons, pistonRings, siteConfig } from '../data/products';
+
+const showcasePistons = pistons.slice(0, 4);
+const showcaseRings = pistonRings.slice(0, 4);
 ---
 
 <Layout>
@@ -31,50 +34,56 @@ import { products, siteConfig } from '../data/products';
       </div>
     </section>
 
-    <!-- Products Grid – Piston -->
-    <section id="products" class="px-4 sm:px-6 py-16 md:py-24 bg-steel-950/30">
+    <!-- Pistons Section -->
+    <section id="pistons-section" class="px-4 sm:px-6 py-16 md:py-24 bg-steel-950/30">
       <div class="mx-auto max-w-7xl">
-        <div class="flex flex-col items-center mb-10 md:mb-16 text-center">
-          <span data-i18n="products.section" class="text-crest-gold text-[10px] sm:text-xs tracking-[0.3em] uppercase mb-2">现货库存</span>
-          <h2 data-i18n="products.heading" class="text-2xl sm:text-3xl md:text-4xl font-display font-black text-steel-50">活塞系列 / Pistons</h2>
+        <div class="flex flex-col items-center mb-10 md:mb-14 text-center">
+          <span class="text-crest-gold text-[10px] sm:text-xs tracking-[0.3em] uppercase mb-2">Pistons</span>
+          <h2 class="text-2xl sm:text-3xl md:text-4xl font-display font-black text-steel-50">活塞产品</h2>
           <div class="flex flex-col items-center gap-0.5 mt-3">
             <span class="block w-10 h-px bg-crest-gold/50"></span>
             <span class="block w-6 h-px bg-crest-gold/20"></span>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8" id="products-grid">
-          {products.map((product, i) => (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8" id="pistons-grid">
+          {showcasePistons.map((product, i) => (
             <ProductCard product={product} index={i} />
           ))}
         </div>
 
-        <div class="text-center mt-10">
-          <a href="#products" class="inline-flex items-center gap-2 px-6 py-3 border border-crest-gold/40 text-crest-gold text-sm tracking-wider hover:bg-crest-gold/10 transition-colors uppercase font-medium">
-            查看更多活塞 <span class="text-crest-gold/60">→</span>
+        <div class="flex justify-center mt-10">
+          <a href="/pistons" class="inline-flex items-center gap-2 px-6 py-3 border border-crest-gold/40 text-crest-gold hover:bg-crest-gold/10 text-sm tracking-wider uppercase transition-all group">
+            查看全部活塞
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
         </div>
+      </div>
+    </section>
 
-        <!-- Piston Ring Section -->
-        <div class="mt-20 pt-16 border-t border-steel-800/20">
-          <div class="flex flex-col items-center mb-10 md:mb-16 text-center">
-            <span class="text-crest-gold text-[10px] sm:text-xs tracking-[0.3em] uppercase mb-2">现货库存</span>
-            <h2 class="text-2xl sm:text-3xl md:text-4xl font-display font-black text-steel-50">活塞环系列 / Piston Rings</h2>
-            <div class="flex flex-col items-center gap-0.5 mt-3">
-              <span class="block w-10 h-px bg-crest-gold/50"></span>
-              <span class="block w-6 h-px bg-crest-gold/20"></span>
-            </div>
+    <!-- Piston Rings Section -->
+    <section id="rings-section" class="px-4 sm:px-6 py-16 md:py-24">
+      <div class="mx-auto max-w-7xl">
+        <div class="flex flex-col items-center mb-10 md:mb-14 text-center">
+          <span class="text-crest-gold text-[10px] sm:text-xs tracking-[0.3em] uppercase mb-2">Piston Rings</span>
+          <h2 class="text-2xl sm:text-3xl md:text-4xl font-display font-black text-steel-50">活塞环产品</h2>
+          <div class="flex flex-col items-center gap-0.5 mt-3">
+            <span class="block w-10 h-px bg-crest-gold/50"></span>
+            <span class="block w-6 h-px bg-crest-gold/20"></span>
           </div>
+        </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8" id="rings-grid">
-            <div class="col-span-full text-center py-10 text-steel-500 text-sm">正在加载活塞环...</div>
-          </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8" id="rings-grid">
+          {showcaseRings.map((product, i) => (
+            <ProductCard product={product} index={i} />
+          ))}
+        </div>
 
-          <div class="text-center mt-10">
-            <a href="/rings" class="inline-flex items-center gap-2 px-6 py-3 border border-crest-gold/40 text-crest-gold text-sm tracking-wider hover:bg-crest-gold/10 transition-colors uppercase font-medium">
-              查看更多活塞环 <span class="text-crest-gold/60">→</span>
-            </a>
-          </div>
+        <div class="flex justify-center mt-10">
+          <a href="/piston-rings" class="inline-flex items-center gap-2 px-6 py-3 border border-crest-gold/40 text-crest-gold hover:bg-crest-gold/10 text-sm tracking-wider uppercase transition-all group">
+            查看全部活塞环
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
         </div>
       </div>
     </section>
@@ -85,121 +94,86 @@ import { products, siteConfig } from '../data/products';
       // Dynamic product loading from API
       (async function() {
         try {
-          const res = await fetch('https://www.yhautopartschina.com/api/products');
+          const res = await fetch('/api/products');
           if (!res.ok) return;
           const apiProducts = await res.json();
           if (!apiProducts.length) return;
 
-          // Separate pistons and rings
-          const pistons = apiProducts.filter(p => p.category !== 'Piston Ring');
-          const rings = apiProducts.filter(p => p.category === 'Piston Ring');
-
-          // Render pistons (show only first 4)
-          const pistonGrid = document.getElementById('products-grid');
-          const langs = {
-            zh: '适配车型', en: 'Compatible', ru: 'Совместимость', ar: 'متوافق مع', vi: 'Tương thích', th: 'เข้ากันได้กับ'
-          };
-          const sp = new URLSearchParams(window.location.search);
-          const lang = langs[sp.get('lang')] || langs.zh;
+          const p = new URLSearchParams(window.location.search);
+          const lang = p.get('lang');
 
           function escHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+          function renderCard(p) {
+            const details = p.details || {};
+            const hasOem = details.oem && details.oem.length > 0;
+            const hasSize = details.size && details.size.length > 0;
+            const hasUsed = details.used && details.used.length > 0;
+            const hasDetails = hasOem || hasSize || hasUsed;
+            const uid = 'd' + Math.random().toString(36).slice(2,8);
 
-          function renderCards(products, grid, limit) {
-            const show = limit ? products.slice(0, limit) : products;
-            grid.innerHTML = show.map((p) => {
-              const details = p.details || {};
-              const hasOem = details.oem && details.oem.length > 0;
-              const hasSize = details.size && details.size.length > 0;
-              const hasUsed = details.used && details.used.length > 0;
-              const hasSpecs = details.specs && details.specs.length > 0;
-              const hasDetails = hasOem || hasSize || hasUsed;
-              const uid = 'd' + Math.random().toString(36).slice(2,8);
-
-              function sectionHTML(title, lines, id) {
-                if (!lines || !lines.length) return '';
-                const visible = lines.slice(0, 3);
-                const hidden = lines.slice(3);
-                const hasMore = hidden.length > 0;
-                const dataId = uid + '-' + id;
-                return `
-                  <div class="detail-section mt-3">
-                    <div class="flex items-center gap-2 mb-1.5">
-                      <span class="text-sm text-crest-gold tracking-widest uppercase font-bold">${title}</span>
-                      <span class="h-px flex-1 bg-crest-gold/20"></span>
-                    </div>
-                    <div class="text-steel-400 text-sm leading-relaxed" data-section="${dataId}">
-                      ${visible.map(l => '<div class="py-0.5">' + escHtml(l) + '</div>').join('')}
-                    </div>
-                    ${hasMore ? `
-                    <div class="text-steel-400 text-sm leading-relaxed hidden" data-section="${dataId}-more">
-                      ${hidden.map(l => '<div>' + escHtml(l) + '</div>').join('')}
-                    </div>
-                    <button class="detail-more-btn text-xs text-crest-gold/60 hover:text-crest-gold mt-1 tracking-wider uppercase transition-colors" data-target="${dataId}">+ More</button>` : ''}
-                  </div>`;
-              }
-
-              function specsHTML(specs) {
-                if (!specs || !specs.length) return '';
-                return `
-                  <div class="detail-section mt-3">
-                    <div class="flex items-center gap-2 mb-1.5">
-                      <span class="text-sm text-crest-gold tracking-widest uppercase font-bold">环高×径向</span>
-                      <span class="h-px flex-1 bg-crest-gold/20"></span>
-                    </div>
-                    <div class="text-steel-400 text-sm leading-relaxed">
-                      ${specs.map(s => '<div class="py-0.5"><span class="text-crest-gold/70 font-medium">' + escHtml(s.ring) + ':</span> ' + escHtml(s.hxr) + '</div>').join('')}
-                    </div>
-                  </div>`;
-              }
-
-              // Check if this is a piston ring (has specs)
-              const isRing = p.category === 'Piston Ring';
-
+            function sectionHTML(title, lines, id) {
+              if (!lines || !lines.length) return '';
+              const visible = lines.slice(0, 3);
+              const hidden = lines.slice(3);
+              const hasMore = hidden.length > 0;
+              const dataId = uid + '-' + id;
               return `
-              <article class="product-card group border border-steel-800/60 hover:border-crest-gold/30 bg-steel-950/50 transition-all duration-500" data-product-id="${p.id}">
-                <div class="aspect-[4/3] overflow-hidden relative bg-steel-950">
-                  ${p.image ? `<img src="${escHtml(p.image)}" alt="${escHtml(p.title)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />` : '<div class="w-full h-full flex items-center justify-center text-steel-700 text-xs">暂无图片</div>'}
-                  <div class="absolute top-0 left-0 bg-crest-gold text-crest-dark text-[10px] px-2 py-0.5 tracking-wider uppercase font-semibold">${escHtml(p.category)}</div>
-                </div>
-                <div class="p-4 sm:p-5">
-                  <h3 class="text-steel-100 text-sm sm:text-base font-semibold leading-snug mb-2 group-hover:text-crest-gold transition-colors">${escHtml(p.title)}</h3>
-                  ${isRing
-                    ? specsHTML(details.specs) + (hasSize ? sectionHTML('Size / Specs', details.size, 'size') : '')
-                    : (hasDetails
-                      ? sectionHTML('OEM No.', details.oem, 'oem') + sectionHTML('Size / Specs', details.size, 'size') + sectionHTML('Used For', details.used, 'used')
-                      : `<p class="text-steel-500 text-[10px] sm:text-xs leading-relaxed mb-3"><span class="text-steel-400 font-medium">${lang}:</span> ${escHtml(p.compatible)}</p>${p.features && p.features.length ? '<div class="flex flex-wrap gap-1.5">' + p.features.map(f => `<span class="text-[9px] sm:text-[10px] px-2 py-0.5 border border-steel-800 text-steel-400">${escHtml(f)}</span>`).join('') + '</div>' : ''}`
-                    )
-                  }
-                </div>
-              </article>`;
-            }).join('');
+                <div class="detail-section mt-3">
+                  <div class="flex items-center gap-2 mb-1.5">
+                    <span class="text-sm text-crest-gold tracking-widest uppercase font-bold">${title}</span>
+                    <span class="h-px flex-1 bg-crest-gold/20"></span>
+                  </div>
+                  <div class="text-steel-400 text-sm leading-relaxed" data-section="${dataId}">
+                    ${visible.map(l => '<div class="py-0.5">' + escHtml(l) + '</div>').join('')}
+                  </div>
+                  ${hasMore ? `
+                  <div class="text-steel-400 text-sm leading-relaxed hidden" data-section="${dataId}-more">
+                    ${hidden.map(l => '<div>' + escHtml(l) + '</div>').join('')}
+                  </div>
+                  <button class="detail-more-btn text-xs text-crest-gold/60 hover:text-crest-gold mt-1 tracking-wider uppercase transition-colors" data-target="${dataId}">+ More</button>` : ''}
+                </div>`;
+            }
 
-            // Add click handlers for More/Less buttons
-            grid.querySelectorAll('.detail-more-btn').forEach(btn => {
-              btn.addEventListener('click', function() {
-                const target = this.dataset.target;
-                const moreEl = grid.querySelector(`[data-section="${target}-more"]`);
-                if (moreEl) {
-                  const hidden = moreEl.classList.toggle('hidden');
-                  this.textContent = hidden ? '+ More' : '- Less';
-                }
-              });
+            return `
+            <article class="product-card group border border-steel-800/60 hover:border-crest-gold/30 bg-steel-950/50 transition-all duration-500" data-product-id="${p.id}">
+              <div class="aspect-[4/3] overflow-hidden relative bg-steel-950">
+                ${p.image ? '<img src="' + escHtml(p.image) + '" alt="' + escHtml(p.title) + '" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />' : '<div class="w-full h-full flex items-center justify-center text-steel-700 text-xs">暂无图片</div>'}
+                <div class="absolute top-0 left-0 bg-crest-gold text-crest-dark text-[10px] px-2 py-0.5 tracking-wider uppercase font-semibold">${escHtml(p.category)}</div>
+              </div>
+              <div class="p-4 sm:p-5">
+                <h3 class="text-steel-100 text-sm sm:text-base font-semibold leading-snug mb-2 group-hover:text-crest-gold transition-colors">${escHtml(p.title)}</h3>
+                ${hasDetails ? sectionHTML('OEM No.', details.oem, 'oem') + sectionHTML('Size / Specs', details.size, 'size') + sectionHTML('Used For', details.used, 'used') : ''}
+              </div>
+            </article>`;
+          }
+
+          // Separate piston and ring products
+          const apiPistons = apiProducts.filter(p => p.category !== '活塞环');
+          const apiRings = apiProducts.filter(p => p.category === '活塞环');
+
+          // Update pistons grid if exists
+          const pistonsGrid = document.getElementById('pistons-grid');
+          if (pistonsGrid && apiPistons.length) {
+            pistonsGrid.innerHTML = apiPistons.slice(0, 4).map(renderCard).join('');
+          }
+
+          // Update rings grid if exists
+          const ringsGrid = document.getElementById('rings-grid');
+          if (ringsGrid && apiRings.length) {
+            ringsGrid.innerHTML = apiRings.slice(0, 4).map(renderCard).join('');
+          }
+
+          // Re-bind detail toggle buttons
+          document.querySelectorAll('.detail-more-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const target = this.dataset.target;
+              const moreEl = document.querySelector('[data-section="' + target + '-more"]');
+              if (moreEl) {
+                const hidden = moreEl.classList.toggle('hidden');
+                this.textContent = hidden ? '+ More' : '- Less';
+              }
             });
-          }
-
-          // Render pistons (first 4)
-          const pistonOnly = pistons.length ? pistons : apiProducts.filter(p => p.category !== 'Piston Ring');
-          if (pistonOnly.length) {
-            renderCards(pistonOnly, pistonGrid, 4);
-          }
-
-          // Render rings (first 4)
-          const ringGrid = document.getElementById('rings-grid');
-          if (rings.length) {
-            renderCards(rings, ringGrid, 4);
-          } else {
-            ringGrid.innerHTML = '<div class="col-span-full text-center py-10 text-steel-500 text-sm">活塞环产品加载中，请稍后刷新...</div>';
-          }
+          });
         } catch(e) { /* keep static content */ }
       })();
     </script>

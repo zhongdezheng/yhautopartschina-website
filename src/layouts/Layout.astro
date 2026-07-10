@@ -5,7 +5,7 @@ const { title = siteConfig.tagline, description = "High-quality piston & piston 
 ---
 
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="zh" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -46,30 +46,19 @@ const { title = siteConfig.tagline, description = "High-quality piston & piston 
   </head>
   <body class="bg-crest-dark text-steel-100 font-sans antialiased">
     <slot />
-
-    <script>
-      import { translations } from '../i18n/translations.js';
-
-      (function() {
-        const SUPPORTED = ['zh', 'en', 'ru', 'ar', 'vi', 'th'];
-        const RTL = ['ar'];
-        const p = new URLSearchParams(window.location.search);
-        const lang = SUPPORTED.includes(p.get('lang')) ? p.get('lang') : 'zh';
-        const t = translations[lang] || translations.zh;
-
-        document.documentElement.dir = RTL.includes(lang) ? 'rtl' : 'ltr';
-        document.documentElement.lang = lang;
-
-        document.querySelectorAll('[data-i18n]').forEach(function(el) {
-          var key = el.getAttribute('data-i18n');
-          if (key && t[key]) el.textContent = t[key];
-        });
-
-        document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
-          var key = el.getAttribute('data-i18n-ph');
-          if (key && t[key]) el.setAttribute('placeholder', t[key]);
-        });
-      })();
-    </script>
+    <!-- i18n is handled inline in Header.astro — no duplicate module load needed -->
   </body>
 </html>
+
+<style is:global>
+  /* Product card as link — preserve original card styling */
+  a.product-card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+  a.product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+</style>

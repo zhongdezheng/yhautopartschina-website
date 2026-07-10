@@ -1,12 +1,18 @@
 ---
 import { products } from '../data/products';
+const cp = Astro.url.pathname;
+const nc = (p) => {
+  const b = 'px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-medium tracking-wide uppercase border transition-colors';
+  const active = (p === '/' && cp === '/') || (p !== '/' && cp.startsWith(p));
+  if (active) return `${b} text-crest-gold border-crest-gold/50`;
+  return `${b} text-steel-400 border-steel-700 hover:border-crest-gold/30 hover:text-crest-gold`;
+};
 ---
 
 <header class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-crest-dark/90 border-b border-steel-800/50">
   <nav class="mx-auto max-w-7xl px-4 sm:px-6 py-2 sm:py-3" dir="ltr">
-    <!-- Top row: logo + nav + lang -->
     <div class="flex items-center justify-between gap-4">
-      <a href="/" class="group flex items-center gap-3 flex-shrink-0">
+      <a href="/" class="group flex items-center gap-3 flex-shrink-0 lang-link">
         <div class="flex flex-col items-center leading-none">
           <span class="text-crest-gold text-xs tracking-[0.3em] font-medium uppercase">YH</span>
           <span class="text-steel-200 text-[10px] tracking-[0.5em] uppercase">Auto Parts</span>
@@ -14,15 +20,11 @@ import { products } from '../data/products';
         <span class="block w-px h-6 sm:h-8 bg-crest-gold/30" aria-hidden="true"></span>
         <span data-i18n="nav.since" class="text-steel-400 text-[10px] sm:text-xs tracking-[0.2em] hidden sm:block">始于 2002</span>
       </a>
-
-      <!-- Nav buttons -->
       <div class="flex items-center gap-1 sm:gap-2">
-        <a href="/" class="px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-medium tracking-wide text-crest-gold border border-crest-gold/40 bg-crest-gold/5 hover:bg-crest-gold/10 transition-colors uppercase">主页</a>
-        <a href="/#products" class="px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-medium tracking-wide text-steel-400 border border-steel-700 hover:border-crest-gold/30 hover:text-steel-200 transition-colors uppercase">活塞</a>
-        <a href="/rings" class="px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-medium tracking-wide text-steel-400 border border-steel-700 hover:border-crest-gold/30 hover:text-steel-200 transition-colors uppercase">活塞环</a>
+        <a href="/" class={"lang-link " + nc('/')}>首页</a>
+        <a href="/pistons" class={"lang-link " + nc('/pistons')}>活塞</a>
+        <a href="/piston-rings" class={"lang-link " + nc('/piston-rings')}>活塞环</a>
       </div>
-
-      <!-- Language dropdown -->
       <div class="relative" id="lang-dropdown">
         <button id="lang-btn" class="flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 text-steel-400 border border-steel-700 hover:border-crest-gold/40 hover:text-steel-200 transition-colors text-[11px] sm:text-sm">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
@@ -39,160 +41,40 @@ import { products } from '../data/products';
         </div>
       </div>
     </div>
-
-    <!-- Bottom row: search -->
     <div class="mt-2 relative" id="header-search">
       <div class="flex items-center gap-2 mx-auto max-w-md">
         <div class="relative flex-1">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-steel-500 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <input
-            type="text"
-            id="search-input"
-            autocomplete="off"
-            placeholder="Search by OEM / model / part number..."
-            class="w-full bg-steel-900/80 border border-steel-700/60 text-steel-200 text-xs sm:text-sm pl-9 pr-3 py-1.5 sm:py-2
-                   focus:border-crest-gold/40 focus:outline-none focus:bg-steel-900 transition-all
-                   placeholder-steel-600 rounded-none"
-          />
-          <button type="button" id="search-clear"
-            class="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-steel-500 hover:text-steel-300 hidden items-center justify-center">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-steel-500 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="search-input" autocomplete="off" placeholder="Search by OEM / model / part number..." class="w-full bg-steel-900/80 border border-steel-700/60 text-steel-200 text-xs sm:text-sm pl-9 pr-3 py-1.5 sm:py-2 focus:border-crest-gold/40 focus:outline-none focus:bg-steel-900 transition-all placeholder-steel-600 rounded-none"/>
+          <button type="button" id="search-clear" class="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-steel-500 hover:text-steel-300 hidden items-center justify-center">
             <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
       </div>
-
-      <!-- Results dropdown -->
-      <div id="search-results"
-        class="absolute left-4 right-4 sm:left-auto sm:right-auto sm:w-full sm:max-w-md top-full mt-1 z-30
-               bg-steel-900 border border-steel-700 overflow-hidden
-               max-h-0 opacity-0 pointer-events-none transition-all duration-200"
-        style="box-shadow: 0 16px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(200,169,110,0.1);">
-      </div>
+      <div id="search-results" class="absolute left-4 right-4 sm:left-auto sm:right-auto sm:w-full sm:max-w-md top-full mt-1 z-30 bg-steel-900 border border-steel-700 overflow-hidden max-h-0 opacity-0 pointer-events-none transition-all duration-200" style="box-shadow: 0 16px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(200,169,110,0.1);"></div>
     </div>
   </nav>
 </header>
 
 <script is:inline>
-  // Language dropdown
-  (function() {
-    var btn = document.getElementById('lang-btn');
-    var panel = document.getElementById('lang-panel');
-    var label = document.getElementById('lang-label');
-    var open = false;
-    
-    // Set current lang label
-    var p = new URLSearchParams(window.location.search);
-    var cur = p.get('lang') || 'zh';
-    var names = {zh:'中文',en:'English',ru:'Русский',ar:'العربية',vi:'Tiếng Việt',th:'ไทย'};
-    label.textContent = names[cur] || '中文';
-
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      open = !open;
-      panel.style.maxHeight = open ? '300px' : '0';
-      panel.style.opacity = open ? '1' : '0';
-      panel.style.pointerEvents = open ? 'auto' : 'none';
-    });
-    document.addEventListener('click', function() {
-      if (open) { open = false; panel.style.maxHeight='0'; panel.style.opacity='0'; panel.style.pointerEvents='none'; }
-    });
-  })();
-
-  // Product search
-  (function () {
-    const staticProducts = {
-      {JSON.stringify(products.map(p => ({ id: p.id, title: p.title, category: p.category, compatible: p.compatible, features: p.features, image: p.image })))}
-    };
-    let allProducts = [...staticProducts];
-
-    fetch('https://www.yhautopartschina.com/api/products').then(r => r.json()).then(data => {
-      if (Array.isArray(data) && data.length) {
-        allProducts = data;
-      }
-    }).catch(() => {});
-
-    const input = document.getElementById('search-input');
-    const results = document.getElementById('search-results');
-    const clearBtn = document.getElementById('search-clear');
-    let timer;
-
-    function showResults(html) {
-      results.innerHTML = html;
-      results.style.maxHeight = '400px';
-      results.style.opacity = '1';
-      results.style.pointerEvents = 'auto';
-    }
-
-    function hideResults() {
-      results.style.maxHeight = '0';
-      results.style.opacity = '0';
-      results.style.pointerEvents = 'none';
-    }
-
-    function getMatchTerms(query) {
-      const normalized = query.replace(/[-_\/\s]+/g, '').toLowerCase().trim();
-      const original = query.toLowerCase().replace(/[-_\/]+/g, ' ').trim();
-      return [...new Set([...original.split(/\s+/).filter(Boolean), normalized].filter(t => t.length >= 2))];
-    }
-
-    function highlightMatch(text, terms) {
-      if (!terms.length) return text;
-      let html = text;
-      terms.forEach(t => {
-        const re = new RegExp(`(${t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-        html = html.replace(re, '<mark class="bg-crest-gold/20 text-crest-gold px-0.5">$1</mark>');
-      });
-      return html;
-    }
-
-    input.addEventListener('input', () => {
-      clearTimeout(timer);
-      const q = input.value.trim();
-      if (q.length < 2) { hideResults(); clearBtn.style.display = 'none'; return; }
-      clearBtn.style.display = 'flex';
-      timer = setTimeout(() => {
-        const terms = getMatchTerms(q);
-        if (!terms.length) { hideResults(); return; }
-        const matches = allProducts.map(p => {
-          const details = p.details || {};
-          const searchParts = [p.title, p.compatible, p.category, p.id, ...(p.features || []), ...(details.oem || []), ...(details.size || []), ...(details.used || [])];
-          const searchText = searchParts.filter(Boolean).join(' ').toLowerCase();
-          const searchTextNoSpaces = searchText.replace(/[-_\s]+/g, '');
-          const score = terms.reduce((s, t) => {
-            if (searchTextNoSpaces.includes(t.replace(/\s+/g, ''))) s += 8;
-            if (searchText.includes(t)) s += 3;
-            if (new RegExp('\\b' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i').test(searchText)) s += 5;
-            return s;
-          }, 0);
-          return { ...p, score };
-        }).filter(p => p.score > 0).sort((a, b) => b.score - a.score).slice(0, 5);
-
-        if (matches.length === 0) {
-          showResults('<div class="px-4 py-6 text-center text-steel-500 text-xs">No products found for "' + q + '"</div>');
-          return;
-        }
-        const html = matches.map(p => `
-          <a href="/#products" class="flex items-start gap-3 px-3 sm:px-4 py-3 border-b border-steel-800/30 last:border-b-0 hover:bg-gradient-to-r hover:from-crest-gold/5 hover:to-transparent transition-colors cursor-pointer group">
-            <div class="flex-shrink-0 w-10 h-10 bg-steel-950 border border-steel-800/50 flex items-center justify-center overflow-hidden">
-              <span class="text-crest-gold text-[8px] tracking-wider font-bold uppercase">${p.category.slice(0,3)}</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="text-steel-200 text-xs sm:text-sm font-medium group-hover:text-crest-gold transition-colors truncate">${highlightMatch(p.title, terms)}</div>
-              <div class="text-steel-500 text-[10px] sm:text-xs mt-0.5 truncate">${highlightMatch(p.compatible, terms)}</div>
-            </div>
-          </a>
-        `).join('');
-        showResults(html);
-      }, 250);
-    });
-
-    clearBtn.addEventListener('click', () => { input.value = ''; input.focus(); hideResults(); clearBtn.style.display = 'none'; });
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') { hideResults(); input.blur(); clearBtn.style.display = 'none'; }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); input.focus(); }
-    });
-    document.addEventListener('click', function(e) { if (!e.target.closest('#header-search')) hideResults(); });
-  })();
+(function(){
+  var t={zh:{'nav.since':'始于 2002','hero.year':'2002年 · 广州','hero.scroll':'向下滚动','hero.trust.markets':'覆盖市场','hero.trust.marketsVal':'东南亚 · 中东 · 非洲','hero.trust.quality':'质量保证','hero.trust.qualityVal':'原厂标准','hero.trust.shipping':'运输方式','hero.trust.shippingVal':'空运 / 海运 / 快递','hero.trust.moq':'起订量','hero.trust.moqVal':'灵活低门槛','3d.section':'3D互动','3d.heading':'3D 活塞探索器','3d.subtitle':'旋转、检查、分解组件。真实 GLTF 模型即将上线。','3d.loading':'加载3D模型中','3d.rotate':'旋转','3d.explode':'分解视图','3d.reset':'重置','products.section':'现货库存','products.heading':'产品系列','products.compatible':'适配车型','inquiry.section':'联系我们','inquiry.heading':'发送询盘','inquiry.name':'姓名 / 公司名 *','inquiry.namePlaceholder':'您的姓名或公司名称','inquiry.email':'邮箱 *','inquiry.emailPlaceholder':'your@email.com','inquiry.vehicle':'目标车型 / 发动机型号','inquiry.vehiclePlaceholder':'例如:奥迪 Q7 3.0T, 宝马 525i N52','inquiry.quantity':'采购数量','inquiry.quantityPlaceholder':'例如:100 套','inquiry.market':'目标市场','inquiry.marketPlaceholder':'选择地区','inquiry.submit':'发送询盘 →','inquiry.footnote':'24小时内回复。无垃圾邮件,无中间商。','payment.section':'支付方式','payment.heading':'我们接受','footer.copyright':'广州 · 中国','footer.tagline':'活塞及活塞环专家 · 服务东南亚、中东及非洲市场','contact.whatsapp':'WhatsApp','thankyou.heading':'询盘已收到','thankyou.message':'感谢您的联系！我们的团队将审核您的需求,并在','thankyou.hours':'24小时内','thankyou.back':'返回首页'},
+  en:{'nav.since':'SINCE 2002','hero.year':'Est. 2002 · Guangzhou','hero.scroll':'Scroll','hero.trust.markets':'Markets','hero.trust.marketsVal':'SEA · ME · Africa','hero.trust.quality':'Quality','hero.trust.qualityVal':'OEM Standard','hero.trust.shipping':'Shipping','hero.trust.shippingVal':'Air / Sea / Express','hero.trust.moq':'MOQ','hero.trust.moqVal':'Flexible & Low','3d.section':'Interactive','3d.heading':'3D Piston Explorer','3d.subtitle':'Rotate, inspect, and explode the assembly.','3d.loading':'Loading 3D Model','3d.rotate':'Rotate','3d.explode':'Explode View','3d.reset':'Reset','products.section':'Inventory','products.heading':'Product Line','products.compatible':'Compatible','inquiry.section':'Get in Touch','inquiry.heading':'Send Inquiry','inquiry.name':'Full Name *','inquiry.namePlaceholder':'Your name or company','inquiry.email':'Email *','inquiry.emailPlaceholder':'your@email.com','inquiry.vehicle':'Target Vehicle / Engine Model','inquiry.vehiclePlaceholder':'e.g. Audi Q7 3.0T, BMW 525i N52','inquiry.quantity':'Quantity','inquiry.quantityPlaceholder':'e.g. 100 sets','inquiry.market':'Target Market','inquiry.marketPlaceholder':'Select region','inquiry.submit':'Send Inquiry →','inquiry.footnote':'We reply within 24 hours. No spam, no middlemen.','payment.section':'Trusted Payments','payment.heading':'We Accept','footer.copyright':'Guangzhou · China','footer.tagline':'Piston & Piston Ring Specialist · Serving SEA, Middle East & Africa','contact.whatsapp':'WhatsApp','thankyou.heading':'Inquiry Received','thankyou.message':'Thank you for reaching out. Our team will review your request and respond within','thankyou.hours':'24 hours','thankyou.back':'Back to Home'},
+  ru:{'nav.since':'С 2002','hero.year':'Осн. 2002 · Гуанчжоу','hero.scroll':'Прокрутить','hero.trust.markets':'Рынки','hero.trust.marketsVal':'ЮВА · Ближний Восток · Африка','hero.trust.quality':'Качество','hero.trust.qualityVal':'Стандарт OEM','hero.trust.shipping':'Доставка','hero.trust.shippingVal':'Авиа / Море / Экспресс','hero.trust.moq':'Мин. заказ','hero.trust.moqVal':'Гибкий и низкий','3d.section':'Интерактив','3d.heading':'3D Обзор поршня','3d.subtitle':'Вращайте, осматривайте и разбирайте.','3d.loading':'Загрузка 3D модели','3d.rotate':'Вращать','3d.explode':'Разобрать','3d.reset':'Сброс','products.section':'Наличие','products.heading':'Продукция','products.compatible':'Совместимость','inquiry.section':'Связаться','inquiry.heading':'Отправить запрос','inquiry.name':'Имя / Компания *','inquiry.namePlaceholder':'Ваше имя или компания','inquiry.email':'Email *','inquiry.emailPlaceholder':'ваш@email.com','inquiry.vehicle':'Модель авто / двигателя','inquiry.vehiclePlaceholder':'например: Audi Q7 3.0T, BMW 525i N52','inquiry.quantity':'Количество','inquiry.quantityPlaceholder':'например: 100 комплектов','inquiry.market':'Целевой рынок','inquiry.marketPlaceholder':'Выберите регион','inquiry.submit':'Отправить запрос →','inquiry.footnote':'Ответим в течение 24 часов. Без спама и посредников.','payment.section':'Оплата','payment.heading':'Мы принимаем','footer.copyright':'Гуанчжоу · Китай','footer.tagline':'Специалист по поршням и кольцам','contact.whatsapp':'WhatsApp','thankyou.heading':'Запрос получен','thankyou.message':'Спасибо за обращение! Наша команда рассмотрит ваш запрос и ответит в течение','thankyou.hours':'24 часов','thankyou.back':'На главную'},
+  ar:{'nav.since':'منذ 2002','hero.year':'تأسست 2002 · قوانغتشو','hero.scroll':'مرر','hero.trust.markets':'الأسواق','hero.trust.marketsVal':'جنوب شرق آسيا · الشرق الأوسط · أفريقيا','hero.trust.quality':'الجودة','hero.trust.qualityVal':'معيار OEM','hero.trust.shipping':'الشحن','hero.trust.shippingVal':'جوي / بحري / سريع','hero.trust.moq':'الحد الأدنى للطلب','hero.trust.moqVal':'مرن ومنخفض','3d.section':'تفاعلي','3d.heading':'مستكشف المكبس ثلاثي الأبعاد','3d.subtitle':'قم بالتدوير والفحص وتفكيك التجميع.','3d.loading':'جاري تحميل النموذج ثلاثي الأبعاد','3d.rotate':'تدوير','3d.explode':'عرض منفجر','3d.reset':'إعادة','products.section':'المخزون','products.heading':'خط الإنتاج','products.compatible':'متوافق مع','inquiry.section':'تواصل معنا','inquiry.heading':'إرسال استفسار','inquiry.name':'الاسم الكامل *','inquiry.namePlaceholder':'اسمك أو شركتك','inquiry.email':'البريد الإلكتروني *','inquiry.emailPlaceholder':'بريدك@example.com','inquiry.vehicle':'المركبة / طراز المحرك المستهدف','inquiry.vehiclePlaceholder':'مثال: Audi Q7 3.0T, BMW 525i N52','inquiry.quantity':'الكمية','inquiry.quantityPlaceholder':'مثال: 100 مجموعة','inquiry.market':'السوق المستهدف','inquiry.marketPlaceholder':'اختر المنطقة','inquiry.submit':'إرسال الاستفسار ←','inquiry.footnote':'نرد خلال 24 ساعة. لا بريد مزعج ولا وسطاء.','payment.section':'طرق الدفع الموثوقة','payment.heading':'نقبل','footer.copyright':'قوانغتشو · الصين','footer.tagline':'متخصص في المكابس وحلقات المكبس','contact.whatsapp':'واتساب','thankyou.heading':'تم استلام الاستفسار','thankyou.message':'شكراً لتواصلك. سيراجع فريقنا طلبك ويرد خلال','thankyou.hours':'24 ساعة','thankyou.back':'العودة للرئيسية'},
+  vi:{'nav.since':'TỪ 2002','hero.year':'Thành lập 2002 · Quảng Châu','hero.scroll':'Cuộn','hero.trust.markets':'Thị trường','hero.trust.marketsVal':'ĐNA · Trung Đông · Châu Phi','hero.trust.quality':'Chất lượng','hero.trust.qualityVal':'Tiêu chuẩn OEM','hero.trust.shipping':'Vận chuyển','hero.trust.shippingVal':'Hàng không / Biển / Nhanh','hero.trust.moq':'Số lượng tối thiểu','hero.trust.moqVal':'Linh hoạt & Thấp','3d.section':'Tương tác','3d.heading':'Khám Phá Piston 3D','3d.subtitle':'Xoay, kiểm tra và tháo rời cụm chi tiết.','3d.loading':'Đang tải mô hình 3D','3d.rotate':'Xoay','3d.explode':'Xem chi tiết','3d.reset':'Đặt lại','products.section':'Kho hàng','products.heading':'Dòng Sản Phẩm','products.compatible':'Tương thích','inquiry.section':'Liên Hệ','inquiry.heading':'Gửi Yêu Cầu','inquiry.name':'Họ và tên *','inquiry.namePlaceholder':'Tên bạn hoặc công ty','inquiry.email':'Email *','inquiry.emailPlaceholder':'email@example.com','inquiry.vehicle':'Dòng xe / Mẫu động cơ','inquiry.vehiclePlaceholder':'VD: Audi Q7 3.0T, BMW 525i N52','inquiry.quantity':'Số lượng','inquiry.quantityPlaceholder':'VD: 100 bộ','inquiry.market':'Thị trường mục tiêu','inquiry.marketPlaceholder':'Chọn khu vực','inquiry.submit':'Gửi Yêu Cầu →','inquiry.footnote':'Chúng tôi phản hồi trong 24 giờ.','payment.section':'Thanh toán tin cậy','payment.heading':'Chúng tôi chấp nhận','footer.copyright':'Quảng Châu · Trung Quốc','footer.tagline':'Chuyên Piston & Vòng Piston','contact.whatsapp':'WhatsApp','thankyou.heading':'Đã Nhận Yêu Cầu','thankyou.message':'Cảm ơn bạn đã liên hệ.','thankyou.hours':'24 giờ','thankyou.back':'Về Trang Chủ'},
+  th:{'nav.since':'ตั้งแต่ 2002','hero.year':'ก่อตั้ง 2002 · กว่างโจว','hero.scroll':'เลื่อน','hero.trust.markets':'ตลาด','hero.trust.marketsVal':'อาเซียน · ตะวันออกกลาง · แอฟริกา','hero.trust.quality':'คุณภาพ','hero.trust.qualityVal':'มาตรฐาน OEM','hero.trust.shipping':'การจัดส่ง','hero.trust.shippingVal':'ทางอากาศ / ทางเรือ / ด่วน','hero.trust.moq':'จำนวนขั้นต่ำ','hero.trust.moqVal':'ยืดหยุ่น & ต่ำ','3d.section':'โต้ตอบ','3d.heading':'สำรวจลูกสูบ 3 มิติ','3d.subtitle':'หมุน ตรวจสอบ และแยกชิ้นส่วน','3d.loading':'กำลังโหลดโมเดล 3 มิติ','3d.rotate':'หมุน','3d.explode':'ดูแยกชิ้น','3d.reset':'รีเซ็ต','products.section':'สินค้าคงคลัง','products.heading':'สายผลิตภัณฑ์','products.compatible':'เข้ากันได้กับ','inquiry.section':'ติดต่อเรา','inquiry.heading':'ส่งคำถาม','inquiry.name':'ชื่อ-นามสกุล *','inquiry.namePlaceholder':'ชื่อหรือบริษัทของคุณ','inquiry.email':'อีเมล *','inquiry.emailPlaceholder':'อีเมล@example.com','inquiry.vehicle':'รุ่นรถ / เครื่องยนต์เป้าหมาย','inquiry.vehiclePlaceholder':'เช่น Audi Q7 3.0T, BMW 525i N52','inquiry.quantity':'จำนวน','inquiry.quantityPlaceholder':'เช่น 100 ชุด','inquiry.market':'ตลาดเป้าหมาย','inquiry.marketPlaceholder':'เลือกภูมิภาค','inquiry.submit':'ส่งคำถาม →','inquiry.footnote':'เราตอบกลับภายใน 24 ชั่วโมง','payment.section':'การชำระเงินที่เชื่อถือได้','payment.heading':'เรารับ','footer.copyright':'กว่างโจว · จีน','footer.tagline':'ผู้เชี่ยวชาญลูกสูบและแหวนลูกสูบ','contact.whatsapp':'WhatsApp','thankyou.heading':'ได้รับคำถามแล้ว','thankyou.message':'ขอบคุณที่ติดต่อเรา','thankyou.hours':'24 ชั่วโมง','thankyou.back':'กลับหน้าหลัก'}};
+  var S=['zh','en','ru','ar','vi','th'],R=['ar'];
+  var p=new URLSearchParams(window.location.search);
+  var l=S.includes(p.get('lang'))?p.get('lang'):'zh';
+  var d=t[l]||t.zh;
+  window.__i18nLang=l;
+  document.documentElement.dir=R.includes(l)?'rtl':'ltr';
+  document.documentElement.lang=l;
+  function a(){document.querySelectorAll('[data-i18n]').forEach(function(e){var k=e.getAttribute('data-i18n');if(k&&d[k])e.textContent=d[k]});document.querySelectorAll('[data-i18n-ph]').forEach(function(e){var k=e.getAttribute('data-i18n-ph');if(k&&d[k])e.setAttribute('placeholder',d[k])})}
+  a();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',a);
+  if(p.get('lang')){document.querySelectorAll('a.lang-link').forEach(function(x){try{var u=new URL(x.href,window.location.origin);u.searchParams.set('lang',p.get('lang'));x.href=u.pathname+u.search}catch(e){}});}
+  (function(){var b=document.getElementById('lang-btn'),pn=document.getElementById('lang-panel'),lb=document.getElementById('lang-label'),nm={zh:'中文',en:'English',ru:'Русский',ar:'العربية',vi:'Tiếng Việt',th:'ไทย'},o=false;lb.textContent=nm[l]||'中文';b.addEventListener('click',function(e){e.stopPropagation();o=!o;pn.style.maxHeight=o?'300px':'0';pn.style.opacity=o?'1':'0';pn.style.pointerEvents=o?'auto':'none'});document.addEventListener('click',function(){if(o){o=false;pn.style.maxHeight='0';pn.style.opacity='0';pn.style.pointerEvents='none'}});document.querySelectorAll('#lang-panel a').forEach(function(x){x.addEventListener('click',function(e){e.preventDefault();var u=new URL(window.location.href);u.searchParams.set('lang',this.dataset.lang);window.location.href=u.toString()})})})();
+  (function(){var sp={{JSON.stringify(products.map(function(p){return{id:p.id,title:p.title,category:p.category,compatible:p.compatible,features:p.features,image:p.image}}))}};var all=[].concat(sp);fetch('/api/products').then(function(r){return r.json()}).then(function(d){if(Array.isArray(d)&&d.length)all=d}).catch(function(){});var inp=document.getElementById('search-input'),res=document.getElementById('search-results'),clr=document.getElementById('search-clear'),tm;function sr(h){res.innerHTML=h;res.style.maxHeight='400px';res.style.opacity='1';res.style.pointerEvents='auto'}function hr(){res.style.maxHeight='0';res.style.opacity='0';res.style.pointerEvents='none'}inp.addEventListener('input',function(){clearTimeout(tm);var q=inp.value.trim();if(q.length<2){hr();clr.style.display='none';return}clr.style.display='flex';tm=setTimeout(function(){var tr=q.replace(/[-_\\/\\s]+/g,'').toLowerCase().trim(),or=q.toLowerCase().replace(/[-_\\/]+/g,' ').trim();var ts=[].concat(or.split(/\\s+/).filter(Boolean));var un=tr.length>=2?[tr]:[];ts=ts.concat(un).filter(function(t,i,a){return a.indexOf(t)===i&&t.length>=2});if(!ts.length){hr();return}var m=all.map(function(p){var dt=p.details||{},sp=[p.title,p.compatible,p.category,p.id].concat(p.features||[],dt.oem||[],dt.size||[],dt.used||[]),st=sp.filter(Boolean).join(' ').toLowerCase(),sn=st.replace(/[-_\\s]+/g,''),sc=ts.reduce(function(s,t){if(sn.includes(t.replace(/\\s+/g,'')))s+=8;if(st.includes(t))s+=3;try{if(new RegExp('\\\\b'+t.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&'),'i').test(st))s+=5}catch(e){}return s},0);return Object.assign({},p,{score:sc})}).filter(function(p){return p.score>0}).sort(function(a,b){return b.score-a.score}).slice(0,5);if(!m.length){sr('<div class="px-4 py-6 text-center text-steel-500 text-xs">No results</div>');return}var lp='';var sp2=new URLSearchParams(window.location.search);if(sp2.get('lang'))lp='?lang='+sp2.get('lang');sr(m.map(function(p){return'<a href="/product/'+p.id+'/'+lp+'" class="flex items-start gap-3 px-3 sm:px-4 py-3 border-b border-steel-800/30 last:border-b-0 hover:bg-gradient-to-r hover:from-crest-gold/5 hover:to-transparent transition-colors cursor-pointer group"><div class="flex-shrink-0 w-10 h-10 bg-steel-950 border border-steel-800/50 flex items-center justify-center overflow-hidden"><span class="text-crest-gold text-[8px] tracking-wider font-bold uppercase">'+p.category.slice(0,3)+'</span></div><div class="flex-1 min-w-0"><div class="text-steel-200 text-xs sm:text-sm font-medium group-hover:text-crest-gold transition-colors truncate">'+p.title+'</div><div class="text-steel-500 text-[10px] sm:text-xs mt-0.5 truncate">'+p.compatible+'</div></div></a>'}).join(''))},250)});clr.addEventListener('click',function(){inp.value='';inp.focus();hr();clr.style.display='none'});document.addEventListener('keydown',function(e){if(e.key==='Escape'){hr();inp.blur();clr.style.display='none'}if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();inp.focus()}});document.addEventListener('click',function(e){if(!e.target.closest('#header-search'))hr()})})();
+})();
 </script>
