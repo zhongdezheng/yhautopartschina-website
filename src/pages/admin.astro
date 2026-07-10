@@ -277,7 +277,7 @@ function switchTab(t) {
 
 function getFiltered() {
   const q = document.getElementById('search-box').value.toLowerCase().trim();
-  let list = tab === 'pistons' ? products.filter(p => p.category !== '活塞环') : products.filter(p => p.category === '活塞环');
+  let list = tab === 'pistons' ? products.filter(p => p.category !== 'Piston Ring' && p.category !== '活塞环') : products.filter(p => p.category === 'Piston Ring' || p.category === '活塞环');
   if (q) list = list.filter(p => {
     const d = p.details || {};
     const txt = [p.title, p.category, p.compatible, p.id, ...(d.oem||[]), ...(d.size||[]), ...(d.used||[]), d.series || ''].join(' ').toLowerCase();

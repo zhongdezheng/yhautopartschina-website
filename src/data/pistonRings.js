@@ -1,5 +1,19 @@
 export const pistonRings = [
   {
+    id: 'ea837-piston-ring',
+    title: '德国原厂 EA837 3.0T 活塞环改进型',
+    category: '活塞环',
+    compatible: '大众 / 奥迪全系列 / 途锐 3.0T / Q7 / 保时捷卡宴',
+    details: {
+      oem: ["06E 107 065 DM", "06E 107 066 DM"],
+      size: ["一体环/分体环可选"],
+      used: ["奥迪 A4/A5/A6/A7/A8/Q5/Q7 3.0T", "保时捷卡宴 3.0T", "大众途锐 3.0T"]
+    },
+    image: '/images/ea837.jpg',
+    marketFocus: ["Southeast Asia", "Middle East"]
+  },
+
+  {
     id: 'ring-462q-62',
     title: '462Q',
     category: '活塞环',

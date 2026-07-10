@@ -1,14 +1,5 @@
 export const pistons = [
   {
-    id: "ea837-piston-ring",
-    title: "德国原厂 EA837 3.0T 活塞环改进型",
-    category: "活塞",
-    compatible: "大众 / 奥迪全系列 / 途锐 3.0T / Q7 / 保时捷卡宴",
-    features: ["一体环/分体环可选", "德国原厂正品", "拒绝副厂对比"],
-    image: "/images/ea837.jpg",
-    marketFocus: ["Southeast Asia", "Middle East"],
-  },
-  {
     id: "stihl-br600-piston",
     title: "进口斯蒂尔 STIHL BR600 吹风机活塞总成",
     category: "通用/油锯活塞",

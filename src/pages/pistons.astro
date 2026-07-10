@@ -56,7 +56,7 @@ import { pistons } from '../data/products';
       const res = await fetch('/api/products');
       if (!res.ok) return;
       const data = await res.json();
-      const apiPistons = (data || []).filter(p => p.category !== '活塞环');
+      const apiPistons = (data || []).filter(p => p.category !== 'Piston Ring' && p.category !== '活塞环');
       if (!apiPistons.length) return;
       const grid = document.getElementById('pistons-grid');
       if (!grid) return;

@@ -148,8 +148,8 @@ const showcaseRings = pistonRings.slice(0, 4);
           }
 
           // Separate piston and ring products
-          const apiPistons = apiProducts.filter(p => p.category !== '活塞环');
-          const apiRings = apiProducts.filter(p => p.category === '活塞环');
+          const apiPistons = apiProducts.filter(p => p.category !== 'Piston Ring' && p.category !== '活塞环');
+          const apiRings = apiProducts.filter(p => p.category === 'Piston Ring' || p.category === '活塞环');
 
           // Update pistons grid if exists
           const pistonsGrid = document.getElementById('pistons-grid');
