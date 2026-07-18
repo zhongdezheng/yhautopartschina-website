@@ -354,6 +354,11 @@ function openModal(id) {
     }
   }
   onTypeChange();
+  // Force product type based on current tab (belt-and-suspenders)
+  if (!id) {
+    document.getElementById('f-type').value = tab === 'rings' ? '活塞环' : '活塞';
+    document.getElementById('f-category').value = tab === 'rings' ? '活塞环' : '';
+  }
 }
 
 function resetForm() {
