@@ -1,0 +1,165 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import ContactBar from '../components/ContactBar.astro';
+import InquiryForm from '../components/InquiryForm.astro';
+---
+
+<Layout title="产品详情 — YH AUTO PARTS" description="OEM quality auto parts from Guangzhou, China.">
+  <Header />
+  <ContactBar />
+
+  <main class="pt-28 md:pt-32 pb-16">
+    <section class="px-4 sm:px-6 py-4">
+      <div class="mx-auto max-w-5xl">
+        <nav class="flex items-center gap-2 text-[10px] sm:text-xs text-steel-500" id="breadcrumb">
+          <a href="/" class="lang-link hover:text-crest-gold transition-colors">首页</a>
+          <span>/</span>
+          <span id="breadcrumb-cat" class="text-steel-300">产品</span>
+          <span>/</span>
+          <span id="breadcrumb-title" class="text-steel-300">加载中...</span>
+        </nav>
+      </div>
+    </section>
+
+    <section class="px-4 sm:px-6 py-8 md:py-12">
+      <div class="mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+        <div class="bg-steel-950 border border-steel-800/50 overflow-hidden">
+          <img id="product-image" src="" alt="" class="w-full aspect-square object-cover" loading="eager" style="display:none" />
+          <div id="product-no-image" class="w-full aspect-square flex items-center justify-center text-steel-700 text-sm bg-steel-950">产品图片待更新</div>
+        </div>
+
+        <div class="flex flex-col gap-5">
+          <div>
+            <span id="product-category" class="text-crest-gold text-[10px] sm:text-xs tracking-[0.3em] uppercase"></span>
+            <h1 id="product-title" class="text-2xl sm:text-3xl font-display font-black text-steel-50 mt-2">加载中...</h1>
+            <p id="product-compatible" class="text-steel-400 text-sm mt-3" style="display:none">
+              <span class="text-steel-500">适配车型:</span> <span></span>
+            </p>
+          </div>
+
+          <div id="product-features" style="display:none">
+            <h3 class="text-xs text-steel-400 tracking-wider uppercase mb-2">产品特点</h3>
+            <div class="flex flex-wrap gap-2" id="product-features-list"></div>
+          </div>
+
+          <div id="product-details" class="space-y-4"></div>
+
+          <div class="mt-auto pt-4">
+            <a href="#inquiry" class="inline-flex items-center gap-2 px-6 py-3 bg-crest-gold text-crest-dark font-semibold text-sm tracking-wider uppercase hover:bg-crest-gold/90 transition-colors">
+              发送询盘 →
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <InquiryForm />
+
+    <footer class="px-4 sm:px-6 py-12 md:py-16 text-center">
+      <div class="flex flex-col items-center gap-3">
+        <div class="flex flex-col items-center leading-none">
+          <span class="text-crest-gold text-sm tracking-[0.3em] font-medium uppercase">YH</span>
+          <span class="text-steel-500 text-[10px] tracking-[0.5em] uppercase">AUTO PARTS</span>
+        </div>
+        <span class="block w-8 h-px bg-crest-gold/30"></span>
+        <p class="text-steel-600 text-xs tracking-wider">广州 · 中国</p>
+        <p class="text-steel-700 text-[10px] tracking-wider">活塞及活塞环专家 · 服务东南亚、中东及非洲市场</p>
+      </div>
+    </footer>
+  </main>
+</Layout>
+
+<script is:inline>
+  (function() {
+    var pathParts = window.location.pathname.split('/');
+    var productId = pathParts[pathParts.length - 1];
+    if (!productId || productId === 'product') {
+      document.getElementById('product-title').textContent = '产品未找到';
+      return;
+    }
+
+    function esc(s) {
+      var d = document.createElement('div');
+      d.textContent = s || '';
+      return d.innerHTML;
+    }
+
+    function renderProduct(p) {
+      var details = typeof p.details === 'string' ? JSON.parse(p.details || '{}') : (p.details || {});
+
+      document.title = p.title + ' — YH AUTO PARTS';
+
+      var cat = p.category || '产品';
+      document.getElementById('breadcrumb-cat').textContent = cat;
+      document.getElementById('breadcrumb-title').textContent = p.title;
+      document.getElementById('product-title').textContent = p.title;
+      document.getElementById('product-category').textContent = cat;
+
+      if (p.compatible) {
+        var el = document.getElementById('product-compatible');
+        el.style.display = 'block';
+        el.querySelector('span:last-child').textContent = p.compatible;
+      }
+
+      if (p.image) {
+        var img = document.getElementById('product-image');
+        img.src = p.image;
+        img.alt = p.title;
+        img.style.display = 'block';
+        document.getElementById('product-no-image').style.display = 'none';
+      }
+
+      if (p.features && p.features.length) {
+        var fEl = document.getElementById('product-features');
+        fEl.style.display = 'block';
+        document.getElementById('product-features-list').innerHTML = p.features.map(function(f) {
+          return '<span class="text-[10px] sm:text-xs px-3 py-1 border border-crest-gold/30 text-crest-gold">' + esc(f) + '</span>';
+        }).join('');
+      }
+
+      var html = '';
+      if (details.oem && details.oem.length) {
+        html += '<div><h3 class="text-xs text-crest-gold tracking-widest uppercase font-semibold mb-2">OEM No.</h3><div class="text-steel-400 text-sm leading-relaxed bg-steel-950/50 border border-steel-800/30 p-3">' + details.oem.map(function(l){return '<div class="py-0.5">'+esc(l)+'</div>';}).join('') + '</div></div>';
+      }
+      if (details.size && details.size.length) {
+        html += '<div><h3 class="text-xs text-crest-gold tracking-widest uppercase font-semibold mb-2">Size / Specs</h3><div class="text-steel-400 text-sm leading-relaxed bg-steel-950/50 border border-steel-800/30 p-3">' + details.size.map(function(l){return '<div class="py-0.5">'+esc(l)+'</div>';}).join('') + '</div></div>';
+      }
+      if (details.used && details.used.length) {
+        html += '<div><h3 class="text-xs text-crest-gold tracking-widest uppercase font-semibold mb-2">Used For</h3><div class="text-steel-400 text-sm leading-relaxed bg-steel-950/50 border border-steel-800/30 p-3">' + details.used.map(function(l){return '<div class="py-0.5">'+esc(l)+'</div>';}).join('') + '</div></div>';
+      }
+      if (details.series) {
+        html += '<div><h3 class="text-xs text-crest-gold tracking-widest uppercase font-semibold mb-2">系列</h3><div class="text-steel-400 text-sm leading-relaxed bg-steel-950/50 border border-steel-800/30 p-3">' + esc(details.series) + '</div></div>';
+      }
+      if (details.custom && details.custom.length) {
+        html += '<div><h3 class="text-xs text-crest-gold tracking-widest uppercase font-semibold mb-2">其他参数</h3><div class="text-steel-400 text-sm leading-relaxed bg-steel-950/50 border border-steel-800/30 p-3">' + details.custom.map(function(c){return '<div class="py-0.5"><span class="text-steel-500">'+esc(c.key)+':</span> '+esc(c.value)+'</div>';}).join('') + '</div></div>';
+      }
+      document.getElementById('product-details').innerHTML = html;
+    }
+
+    fetch('/api/products?id=' + encodeURIComponent(productId))
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(data) {
+        if (data && !data.error) {
+          renderProduct(data);
+        } else {
+          document.getElementById('product-title').textContent = '产品未找到';
+        }
+      })
+      .catch(function() {
+        document.getElementById('product-title').textContent = '加载失败，请刷新重试';
+      });
+
+    // Language support
+    var p = new URLSearchParams(window.location.search);
+    var curLang = p.get('lang');
+    if (!curLang) return;
+    document.querySelectorAll('a.lang-link').forEach(function(a) {
+      try {
+        var url = new URL(a.href, window.location.origin);
+        url.searchParams.set('lang', curLang);
+        a.href = url.pathname + url.search;
+      } catch(e) {}
+    });
+  })();
+</script>

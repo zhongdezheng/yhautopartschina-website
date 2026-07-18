@@ -1,0 +1,3 @@
+# Cloudflare Pages redirects for YH Auto Parts
+# Product detail catch-all: /product/* → /product (SPA routing, URL stays same)
+/product/* /product 200
