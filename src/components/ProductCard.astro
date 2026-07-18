@@ -3,7 +3,7 @@ const { product, index } = Astro.props;
 const details = product.details ? (typeof product.details === 'string' ? JSON.parse(product.details) : product.details) : null;
 ---
 
-<a href={`/product/${product.id}`} class="product-card group border border-steel-800/60 hover:border-crest-gold/30 bg-steel-950/50 transition-all duration-500 block no-underline" data-product-id={product.id}>
+<a href={`/product?id=${product.id}`} class="product-card group border border-steel-800/60 hover:border-crest-gold/30 bg-steel-950/50 transition-all duration-500 block no-underline" data-product-id={product.id}>
   <div class="aspect-[4/3] overflow-hidden relative bg-steel-950">
     {product.image ? (
       <img src={product.image} alt={product.title} class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />

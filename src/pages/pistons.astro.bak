@@ -66,7 +66,7 @@ import { pistons } from '../data/products';
         const oemHtml = (details.oem||[]).length ? `<div class="detail-section"><div class="flex items-center gap-2 mb-1.5"><span class="text-[11px] text-crest-gold tracking-widest uppercase font-semibold">OEM No.</span><span class="h-px flex-1 bg-crest-gold/20"></span></div><div class="text-steel-400 text-xs leading-relaxed">${details.oem.slice(0,3).join('<br>')}</div></div>` : '';
         const usedHtml = (details.used||[]).length ? `<div class="detail-section mt-3"><div class="flex items-center gap-2 mb-1"><span class="text-[11px] text-crest-gold tracking-widest uppercase font-semibold">Used For</span><span class="h-px flex-1 bg-crest-gold/20"></span></div><div class="text-steel-400 text-xs leading-relaxed">${details.used.slice(0,3).join('<br>')}</div></div>` : '';
         const seriesTag = details.series ? `<span class="absolute bottom-2 right-2 bg-crest-dark/80 text-crest-gold text-[10px] px-2 py-0.5">${details.series}</span>` : '';
-        return `<a href="/product?id=${p.id}" class="product-card group border border-steel-800/60 hover:border-crest-gold/30 bg-steel-950/50 transition-all duration-500 block no-underline">
+        return `<a href="/product/${p.id}" class="product-card group border border-steel-800/60 hover:border-crest-gold/30 bg-steel-950/50 transition-all duration-500 block no-underline">
           <div class="aspect-[4/3] overflow-hidden relative bg-steel-950">
             ${imgHtml}
             <div class="absolute top-0 left-0 bg-crest-gold text-crest-dark text-[10px] px-2 py-0.5 tracking-wider uppercase font-semibold">${p.category}</div>

@@ -72,9 +72,9 @@ import InquiryForm from '../components/InquiryForm.astro';
 
 <script is:inline>
   (function() {
-    var pathParts = window.location.pathname.split('/');
-    var productId = pathParts[pathParts.length - 1];
-    if (!productId || productId === 'product') {
+    var params = new URLSearchParams(window.location.search);
+    var productId = params.get('id');
+    if (!productId) {
       document.getElementById('product-title').textContent = '产品未找到';
       return;
     }
