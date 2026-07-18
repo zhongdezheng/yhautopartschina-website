@@ -1,3 +1,3 @@
-# Cloudflare Pages redirects for YH Auto Parts
-# SPA routing: /product/any-path → serve product/index.html without URL change
+# Cloudflare Pages SPA routing for product detail pages
 /product/* /product/index.html 200
+/product/*/ /product/index.html 200
