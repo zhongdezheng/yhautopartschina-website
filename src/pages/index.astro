@@ -135,7 +135,7 @@ const showcaseRings = pistonRings.slice(0, 4);
             }
 
             return `
-            <article class="product-card group border border-steel-800/60 hover:border-crest-gold/30 bg-steel-950/50 transition-all duration-500" data-product-id="${p.id}">
+            <a href="/product/${p.id}" class="product-card group border border-steel-800/60 hover:border-crest-gold/30 bg-steel-950/50 transition-all duration-500 block no-underline" data-product-id="${p.id}">
               <div class="aspect-[4/3] overflow-hidden relative bg-steel-950">
                 ${p.image ? '<img src="' + escHtml(p.image) + '" alt="' + escHtml(p.title) + '" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />' : '<div class="w-full h-full flex items-center justify-center text-steel-700 text-xs">暂无图片</div>'}
                 <div class="absolute top-0 left-0 bg-crest-gold text-crest-dark text-[10px] px-2 py-0.5 tracking-wider uppercase font-semibold">${escHtml(p.category)}</div>
@@ -144,7 +144,7 @@ const showcaseRings = pistonRings.slice(0, 4);
                 <h3 class="text-steel-100 text-sm sm:text-base font-semibold leading-snug mb-2 group-hover:text-crest-gold transition-colors">${escHtml(p.title)}</h3>
                 ${hasDetails ? sectionHTML('OEM No.', details.oem, 'oem') + sectionHTML('Size / Specs', details.size, 'size') + sectionHTML('Used For', details.used, 'used') : ''}
               </div>
-            </article>`;
+            </a>`;
           }
 
           // Separate piston and ring products
