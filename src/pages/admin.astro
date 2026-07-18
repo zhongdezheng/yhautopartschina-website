@@ -358,7 +358,7 @@ function openModal(id) {
 
 function resetForm() {
   ['f-title','f-category','f-compatible','f-oem','f-used','f-markets','f-image-urls'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('f-type').value = '活塞';
+  document.getElementById('f-type').value = tab === 'rings' ? '活塞环' : '活塞';
   document.getElementById('f-series').value = '';
   document.getElementById('f-series-other').style.display = 'none';
   document.getElementById('f-series-other').value = '';
