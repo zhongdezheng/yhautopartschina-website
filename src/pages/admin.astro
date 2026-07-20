@@ -242,9 +242,9 @@ if (token) { showMain(); loadProducts(); }
 function login() {
   token = document.getElementById('login-token').value.trim();
   if (!token) return t('请输入管理令牌', 'error');
-  fetch('/api/products', { headers: { Authorization: 'Bearer ' + token } })
-    .then(r => { if (r.ok) { localStorage.setItem('yh_admin_token', token); showMain(); loadProducts(); } else t('令牌无效', 'error'); })
-    .catch(() => t('连接失败', 'error'));
+  localStorage.setItem('yh_admin_token', token);
+  showMain();
+  loadProducts();
 }
 
 function logout() {
