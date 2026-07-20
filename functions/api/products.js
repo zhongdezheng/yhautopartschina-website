@@ -10,7 +10,7 @@ export async function onRequest(context) {
   if (method !== 'GET') {
     const token = env.ADMIN_TOKEN || 'yhadmin2024';
     const auth = request.headers.get('Authorization');
-    if (auth !== `Bearer ${token}`) {
+    if (auth !== `Bearer ${token}` && auth !== `***${token}`) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },
