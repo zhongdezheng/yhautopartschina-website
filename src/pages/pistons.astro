@@ -49,36 +49,4 @@ import { pistons } from '../data/products';
   </main>
 </Layout>
 
-<script is:inline>
-  // Load pistons from API into the grid (replaces static 4 with all from DB)
-  (async function() {
-    try {
-      const res = await fetch('/api/products');
-      if (!res.ok) return;
-      const data = await res.json();
-      const apiPistons = (data || []).filter(p => p.category !== 'Piston Ring' && p.category !== '活塞环');
-      if (!apiPistons.length || apiPistons.length < 6) return; // keep static data if API has too few
-      const grid = document.getElementById('pistons-grid');
-      if (!grid) return;
-      grid.innerHTML = apiPistons.map((p, i) => {
-        const details = typeof p.details === 'string' ? JSON.parse(p.details||'{}') : (p.details || {});
-        const imgHtml = p.image ? `<img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />` : `<div class="w-full h-full flex items-center justify-center text-steel-700 text-xs">暂无图片</div>`;
-        const oemHtml = (details.oem||[]).length ? `<div class="detail-section"><div class="flex items-center gap-2 mb-1.5"><span class="text-[11px] text-crest-gold tracking-widest uppercase font-semibold">OEM No.</span><span class="h-px flex-1 bg-crest-gold/20"></span></div><div class="text-steel-400 text-xs leading-relaxed">${details.oem.slice(0,3).join('<br>')}</div></div>` : '';
-        const usedHtml = (details.used||[]).length ? `<div class="detail-section mt-3"><div class="flex items-center gap-2 mb-1"><span class="text-[11px] text-crest-gold tracking-widest uppercase font-semibold">Used For</span><span class="h-px flex-1 bg-crest-gold/20"></span></div><div class="text-steel-400 text-xs leading-relaxed">${details.used.slice(0,3).join('<br>')}</div></div>` : '';
-        const seriesTag = details.series ? `<span class="absolute bottom-2 right-2 bg-crest-dark/80 text-crest-gold text-[10px] px-2 py-0.5">${details.series}</span>` : '';
-        return `<a href="/product?id=${p.id}" class="product-card group border border-steel-800/60 hover:border-crest-gold/30 bg-steel-950/50 transition-all duration-500 block no-underline">
-          <div class="aspect-[4/3] overflow-hidden relative bg-steel-950">
-            ${imgHtml}
-            <div class="absolute top-0 left-0 bg-crest-gold text-crest-dark text-[10px] px-2 py-0.5 tracking-wider uppercase font-semibold">${p.category}</div>
-            ${seriesTag}
-          </div>
-          <div class="p-4 sm:p-5">
-            <h3 class="text-steel-100 text-sm sm:text-base font-semibold leading-snug mb-2 group-hover:text-crest-gold transition-colors">${p.title}</h3>
-            ${oemHtml}${usedHtml}
-            <p class="text-steel-500 text-[10px] text-xs mt-3">${p.compatible}</p>
-          </div>
-        </a>`;
-      }).join('');
-    } catch(e) {}
-  })();
-</script>
+
