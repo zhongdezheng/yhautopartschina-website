@@ -255,7 +255,7 @@ const ADMIN_TOKEN = import.meta.env.ADMIN_TOKEN || 'yhadmin2024';
           toast.className = 'toast success show';
           
           // Slow down - 2s between each request
-          await new Promise(function(res) { setTimeout(res, 2000); });
+          await new Promise(function(res) { setTimeout(res, 8000); });
         }
         
         toast.textContent = '✓ 完成: ' + ok + '/' + d.length + ' 条活塞已导入';
