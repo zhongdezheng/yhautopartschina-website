@@ -57,7 +57,7 @@ import { pistons } from '../data/products';
       if (!res.ok) return;
       const data = await res.json();
       const apiPistons = (data || []).filter(p => p.category !== 'Piston Ring' && p.category !== '活塞环');
-      if (!apiPistons.length) return;
+      if (!apiPistons.length || apiPistons.length < 6) return; // keep static data if API has too few
       const grid = document.getElementById('pistons-grid');
       if (!grid) return;
       grid.innerHTML = apiPistons.map((p, i) => {
